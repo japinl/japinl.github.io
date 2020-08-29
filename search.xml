@@ -1125,26 +1125,6 @@ table th:nth-of-type(2) {
       </tags>
   </entry>
   <entry>
-    <title>Git 跳过 SSL 验证</title>
-    <url>/2019/08/git-skip-ssl-verify/</url>
-    <content><![CDATA[<p>有时，我们在克隆代码或者拉取代码时想要跳过 SSL 验证（至于为什么有这么奇葩的需求就不多说了，自行体会），git 提供了多种方式可供用户选择。</p>
-<p>首先，我们看来看看克隆代码时如何跳过 SSL 验证。如下，我们可以使用 <code>GIT_NO_SSL_VERIFY</code> 环境变量来设置是否采用 SSL 验证。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> GIT_SSL_NO_VERIFY=<span class="literal">true</span> git <span class="built_in">clone</span> https://github.com/xxx/xxx</span></span><br></pre></td></tr></table></figure>
-
-<p>如果是仓库已经采用 SSL 验证克隆下来，但是在随后的拉取过程中想要取消 SSL 验证，我们可以通过修改配置来完成，例如：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git config http.sslVerify <span class="literal">false</span></span></span><br></pre></td></tr></table></figure>
-
-<p>如果您想后续的仓库都跳过 SSL 验证，可以设置全局的 <code>http.sslVerify</code>，如下所示：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git config --global http.sslVerify <span class="literal">false</span></span></span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>杂项</category>
-      </categories>
-      <tags>
-        <tag>git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Git 撤销已经修改的文件</title>
     <url>/2019/12/git-discard-changes/</url>
     <content><![CDATA[<p>Git 中可以通过 <code>git checkout -- &lt;file&gt;...</code> 来撤销当前工作空间的修改。例如，我们有以下文件已经做出了修改：</p>
@@ -1165,6 +1145,26 @@ table th:nth-of-type(2) {
 
 <p>上面的命令可以撤销所有对 C 源文件的修改。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="https://git-scm.com/docs/git-checkout">https://git-scm.com/docs/git-checkout</a></p>
+]]></content>
+      <categories>
+        <category>杂项</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git 跳过 SSL 验证</title>
+    <url>/2019/08/git-skip-ssl-verify/</url>
+    <content><![CDATA[<p>有时，我们在克隆代码或者拉取代码时想要跳过 SSL 验证（至于为什么有这么奇葩的需求就不多说了，自行体会），git 提供了多种方式可供用户选择。</p>
+<p>首先，我们看来看看克隆代码时如何跳过 SSL 验证。如下，我们可以使用 <code>GIT_NO_SSL_VERIFY</code> 环境变量来设置是否采用 SSL 验证。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> GIT_SSL_NO_VERIFY=<span class="literal">true</span> git <span class="built_in">clone</span> https://github.com/xxx/xxx</span></span><br></pre></td></tr></table></figure>
+
+<p>如果是仓库已经采用 SSL 验证克隆下来，但是在随后的拉取过程中想要取消 SSL 验证，我们可以通过修改配置来完成，例如：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git config http.sslVerify <span class="literal">false</span></span></span><br></pre></td></tr></table></figure>
+
+<p>如果您想后续的仓库都跳过 SSL 验证，可以设置全局的 <code>http.sslVerify</code>，如下所示：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git config --global http.sslVerify <span class="literal">false</span></span></span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
         <category>杂项</category>
@@ -1431,30 +1431,6 @@ table th:nth-of-type(2) {
       </tags>
   </entry>
   <entry>
-    <title>Hexo NexT (v8.x) 主题添加近期文章</title>
-    <url>/2020/08/next-8-0-0-recent-posts/</url>
-    <content><![CDATA[<p>最近将博客由 NexT-v5.x 迁移到 NexT-v8.x 版本，这其中有很多东西已将发生变化了。本文简要介绍一下如何在新版中加入近期文章的功能。NexT-v8.x 版本将模版文件由原来的 <code>swig</code> 变更为 <code>njk</code> 后缀，因此，之前的近期文章的功能不再适用，我们需要稍作修改。</p>
-<a id="more"></a>
-
-<h2 id="创建自定义文件"><a href="#创建自定义文件" class="headerlink" title="创建自定义文件"></a>创建自定义文件</h2><p>NexT-v8.x 支持自定义 <code>njk</code> 文件，从而避免修改 NexT 的源码，见参考链接 [<a href="https://theme-next.js.org/docs/advanced-settings/custom-files.html?highlight=sideb">2</a>]。我们在站点的 <code>source</code> 目录下创建 <code>_data/sidebar.njk</code> 文件，并加入如下内容：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!-- recent posts --&gt;</span><br><span class="line">&#123;%- if theme.recent_posts %&#125;</span><br><span class="line">    &lt;div class&#x3D;&quot;links-of-blogroll motion-element &#123;&#123; &quot;links-of-blogroll-&quot; + theme.recent_posts_layout &#125;&#125;&quot;&gt;</span><br><span class="line">        &lt;div class&#x3D;&quot;links-of-blogroll-title recent-posts-title&quot;&gt;</span><br><span class="line">	    &lt;i class&#x3D;&quot;fa fa-history &#123;&#123; theme.recent_posts_icon | lower &#125;&#125;&quot; aria-hidden&#x3D;&quot;true&quot;&gt;&lt;&#x2F;i&gt;</span><br><span class="line">            &#123;&#123; theme.recent_posts_title &#125;&#125;</span><br><span class="line">	&lt;&#x2F;div&gt;</span><br><span class="line">	&lt;ul class&#x3D;&quot;links-of-blogroll-list recent-posts-list&quot;&gt;</span><br><span class="line">	    &#123;%- set posts &#x3D; site.posts.sort(&#39;-date&#39;).toArray() %&#125;</span><br><span class="line">	    &#123;%- for post in posts.slice(&#39;0&#39;, &#39;5&#39;) %&#125;</span><br><span class="line">	        &lt;li class&#x3D;&quot;my-links-of-blogroll-item&quot;&gt;</span><br><span class="line">		    &lt;a href&#x3D;&quot;&#123;&#123; url_for(post.path) &#125;&#125;&quot; title&#x3D;&quot;&#123;&#123; post.title &#125;&#125;&quot; target&#x3D;&quot;&quot;&gt;</span><br><span class="line">		    &#123;&#123; post.title &#125;&#125;</span><br><span class="line">		    &lt;&#x2F;a&gt;</span><br><span class="line">		&lt;&#x2F;li&gt;</span><br><span class="line">	    &#123;%- endfor %&#125;</span><br><span class="line">	&lt;&#x2F;ul&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">&#123;%- endif %&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="修改主题配置文件"><a href="#修改主题配置文件" class="headerlink" title="修改主题配置文件"></a>修改主题配置文件</h2><p>接着我们在站点目录下的主题配置文件（_config.next.yml）中加入如下内容开启近期文章功能。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">recent_posts: true</span><br><span class="line">recent_posts_title: 近期文章</span><br><span class="line">recent_posts_layout: block</span><br></pre></td></tr></table></figure>
-
-<p>接着重启服务，我们便可以看到如下所示的近期文章板块。</p>
-<img src="/2020/08/next-8-0-0-recent-posts/recent-posts.jpg" class="">
-
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="https://theme-next.js.org/next-8-0-0-rc-1-released/">https://theme-next.js.org/next-8-0-0-rc-1-released/</a><br>[2] <a href="https://theme-next.js.org/docs/advanced-settings/custom-files.html?highlight=sideb">https://theme-next.js.org/docs/advanced-settings/custom-files.html?highlight=sideb</a><br>[3] <a href="https://hasaik.com/posts/ab21860c.html">https://hasaik.com/posts/ab21860c.html</a></p>
-]]></content>
-      <categories>
-        <category>博客</category>
-      </categories>
-      <tags>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Ping 权限拒绝</title>
     <url>/2018/09/ping-permission-denied/</url>
     <content><![CDATA[<p>今天在 CentOS 上遇到一个奇怪的问题，ping 程序在 root 用户下能正常使用，但是在非 root 用户下则出现如下错误：</p>
@@ -1483,6 +1459,30 @@ table th:nth-of-type(2) {
       </categories>
       <tags>
         <tag>ping</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo NexT (v8.x) 主题添加近期文章</title>
+    <url>/2020/08/next-8-0-0-recent-posts/</url>
+    <content><![CDATA[<p>最近将博客由 NexT-v5.x 迁移到 NexT-v8.x 版本，这其中有很多东西已将发生变化了。本文简要介绍一下如何在新版中加入近期文章的功能。NexT-v8.x 版本将模版文件由原来的 <code>swig</code> 变更为 <code>njk</code> 后缀，因此，之前的近期文章的功能不再适用，我们需要稍作修改。</p>
+<a id="more"></a>
+
+<h2 id="创建自定义文件"><a href="#创建自定义文件" class="headerlink" title="创建自定义文件"></a>创建自定义文件</h2><p>NexT-v8.x 支持自定义 <code>njk</code> 文件，从而避免修改 NexT 的源码，见参考链接 [<a href="https://theme-next.js.org/docs/advanced-settings/custom-files.html?highlight=sideb">2</a>]。我们在站点的 <code>source</code> 目录下创建 <code>_data/sidebar.njk</code> 文件，并加入如下内容：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!-- recent posts --&gt;</span><br><span class="line">&#123;%- if theme.recent_posts %&#125;</span><br><span class="line">    &lt;div class&#x3D;&quot;links-of-blogroll motion-element &#123;&#123; &quot;links-of-blogroll-&quot; + theme.recent_posts_layout &#125;&#125;&quot;&gt;</span><br><span class="line">        &lt;div class&#x3D;&quot;links-of-blogroll-title recent-posts-title&quot;&gt;</span><br><span class="line">	    &lt;i class&#x3D;&quot;fa fa-history &#123;&#123; theme.recent_posts_icon | lower &#125;&#125;&quot; aria-hidden&#x3D;&quot;true&quot;&gt;&lt;&#x2F;i&gt;</span><br><span class="line">            &#123;&#123; theme.recent_posts_title &#125;&#125;</span><br><span class="line">	&lt;&#x2F;div&gt;</span><br><span class="line">	&lt;ul class&#x3D;&quot;links-of-blogroll-list recent-posts-list&quot;&gt;</span><br><span class="line">	    &#123;%- set posts &#x3D; site.posts.sort(&#39;-date&#39;).toArray() %&#125;</span><br><span class="line">	    &#123;%- for post in posts.slice(&#39;0&#39;, &#39;5&#39;) %&#125;</span><br><span class="line">	        &lt;li class&#x3D;&quot;my-links-of-blogroll-item&quot;&gt;</span><br><span class="line">		    &lt;a href&#x3D;&quot;&#123;&#123; url_for(post.path) &#125;&#125;&quot; title&#x3D;&quot;&#123;&#123; post.title &#125;&#125;&quot; target&#x3D;&quot;&quot;&gt;</span><br><span class="line">		    &#123;&#123; post.title &#125;&#125;</span><br><span class="line">		    &lt;&#x2F;a&gt;</span><br><span class="line">		&lt;&#x2F;li&gt;</span><br><span class="line">	    &#123;%- endfor %&#125;</span><br><span class="line">	&lt;&#x2F;ul&gt;</span><br><span class="line">    &lt;&#x2F;div&gt;</span><br><span class="line">&#123;%- endif %&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="修改主题配置文件"><a href="#修改主题配置文件" class="headerlink" title="修改主题配置文件"></a>修改主题配置文件</h2><p>接着我们在站点目录下的主题配置文件（_config.next.yml）中加入如下内容开启近期文章功能。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">recent_posts: true</span><br><span class="line">recent_posts_title: 近期文章</span><br><span class="line">recent_posts_layout: block</span><br></pre></td></tr></table></figure>
+
+<p>接着重启服务，我们便可以看到如下所示的近期文章板块。</p>
+<img src="/2020/08/next-8-0-0-recent-posts/recent-posts.jpg" class="">
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="https://theme-next.js.org/next-8-0-0-rc-1-released/">https://theme-next.js.org/next-8-0-0-rc-1-released/</a><br>[2] <a href="https://theme-next.js.org/docs/advanced-settings/custom-files.html?highlight=sideb">https://theme-next.js.org/docs/advanced-settings/custom-files.html?highlight=sideb</a><br>[3] <a href="https://hasaik.com/posts/ab21860c.html">https://hasaik.com/posts/ab21860c.html</a></p>
+]]></content>
+      <categories>
+        <category>博客</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
