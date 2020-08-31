@@ -354,37 +354,6 @@
       </tags>
   </entry>
   <entry>
-    <title>C 语言类型及存储类限定符</title>
-    <url>/2019/06/C-type-and-storage-class-specifiers/</url>
-    <content><![CDATA[<p>本文主要介绍 C 语言中的类型及存储类限定符，C 语言中提高了两个类型限定符：<code>const</code> 和 <code>volatile</code>；类型限定符指明了变量的访问方式。存储类限定符则指定了变量在内存中的存储方式，C 语言提供了四种存储类限定符：<code>auto</code>，<code>register</code>，<code>extern</code> 和 <code>static</code>。</p>
-<a id="more"></a>
-
-<h2 id="类型限定符"><a href="#类型限定符" class="headerlink" title="类型限定符"></a>类型限定符</h2><p>类型限定符允许您指定变量的访问方式，C 语言提供了两个类型限定符：(a) <code>const</code> 指明变量是只读的，一旦初始化，它的值将不能被改变；(b) <code>volatile</code> 表明变量是显式可变的，并且看似无用的变量访问（例如，通过指针）不应该被优化掉。例如：</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">float</span> pi = <span class="number">3.14159f</span>;</span><br><span class="line"><span class="keyword">volatile</span> <span class="keyword">float</span> currentTemperature = <span class="number">40.0</span>;</span><br></pre></td></tr></table></figure>
-
-<p><code>const</code> 限定符除了能防止变量被意外改变之外，它还能辅助编译器进行优化。针对有回调函数或者信号处理函数更新的变量，我们可以将其定义为 <code>volatile</code> 从而避免编译器过度优化导致数据不一致。</p>
-<h2 id="存储类限定符"><a href="#存储类限定符" class="headerlink" title="存储类限定符"></a>存储类限定符</h2><p>存储类限定允许您定义变量在内存中的存储方式。<code>auto</code> 关键字用于定义函数内部的局部变量，当函数返回时，这是局部变量（自动变量）将自动被清理掉，这是函数内部的变量默认行为。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">void</span></span><br><span class="line">foo(<span class="keyword">int</span> value)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">auto</span> <span class="keyword">int</span> x = value;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>register</code> 关键字定义的变量被称为寄存器变量，它的行为与 <code>auto</code> 定义的变量几乎类似，稍有不同的是，该关键字表明该变量的使用频率极高，如果可能尽量将其放在寄存器中。如果变量被声明为 <code>register</code> 类型，__那么将不能对其进行取地址运算 (<code>&amp;</code>)__。这意味着您不能引用使用存储类寄存器声明的数组的元素。GCC 编译器在优化时可以很好的选择哪些变量使用被保存在寄存器中，因此寄存器变量很少使用。</p>
-<p><code>static</code> 限定符与 <code>auto</code> 的作用正好相反：当将 <code>static</code> 应用于函数内部或块内的变量时，即使函数完成或块结束之后，这些变量都将保存其值。这就是所谓的__静态存储持续期 (Static Storage Duration)__。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span></span><br><span class="line">sum (<span class="keyword">int</span> x)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> sumSoFar = <span class="number">0</span>;</span><br><span class="line">    sumSoFar = sumSoFar + x;</span><br><span class="line">    <span class="keyword">return</span> sumSoFar;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>此外，您还可以在顶层（即不在函数内）将变量（或函数）声明为 <code>static</code>。这些变量（全局变量）仅在当前源文件可见，其它源文件则不可见。这就给 <code>static</code> 带来了双重含义；第二种意义则是__静态链接 (Static Linkage)__。在单独的文件中具有静态链接的两个函数或变量是完全独立的；在声明它的文件之外都不可见。</p>
-<p>声明为 <code>extern</code> 的未初始化变量的默认值为 <code>0</code>，<code>0.0</code> 或 <code>NULL</code>，具体值则取决于其类型。声明为 <code>auto</code> 和 <code>register</code> 的未初始化变量保留为初始化状态，因此不应假设这些变量保存特定的值。</p>
-<p><code>extern</code> 对于声明要链接到项目的所有源文件可见的变量很有用。变量声明时并不会为其分配存储空间，所以你无法在 <code>extern</code> 声明语句中进行初始化操作。您必须同时进行 <code>extern</code> 声明和非 <code>extern</code> 声明，实际上后者是变量的定义，它将为期分配存储空间。<code>extern</code> 声明语句可以重复多次。</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="keyword">int</span> numberOfClients;</span><br><span class="line">...</span><br><span class="line"><span class="keyword">int</span> numberOfClients = <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
-
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Type-Qualifiers">https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Type-Qualifiers</a></p>
-]]></content>
-      <categories>
-        <category>编程</category>
-      </categories>
-      <tags>
-        <tag>C 语言</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>MacOS Mojave 上 GDB 调试配置</title>
     <url>/2019/06/GDB-on-MacOS-Mojave/</url>
     <content><![CDATA[<p>最近在 MacOS 上写代码，需要使用 gdb 进行调试，踩了一些坑，因此在这里做一个简要记录。稍微搜索一下我们就可以知道要在 MacOS 上使用 gdb 需要先创建一个自签名证书（<a href="https://gist.github.com/gravitylow/fb595186ce6068537a6e9da6d8b5b96d">看这里</a>)。</p>
@@ -434,6 +403,37 @@
       <tags>
         <tag>MacOS</tag>
         <tag>gdb</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>C 语言类型及存储类限定符</title>
+    <url>/2019/06/C-type-and-storage-class-specifiers/</url>
+    <content><![CDATA[<p>本文主要介绍 C 语言中的类型及存储类限定符，C 语言中提高了两个类型限定符：<code>const</code> 和 <code>volatile</code>；类型限定符指明了变量的访问方式。存储类限定符则指定了变量在内存中的存储方式，C 语言提供了四种存储类限定符：<code>auto</code>，<code>register</code>，<code>extern</code> 和 <code>static</code>。</p>
+<a id="more"></a>
+
+<h2 id="类型限定符"><a href="#类型限定符" class="headerlink" title="类型限定符"></a>类型限定符</h2><p>类型限定符允许您指定变量的访问方式，C 语言提供了两个类型限定符：(a) <code>const</code> 指明变量是只读的，一旦初始化，它的值将不能被改变；(b) <code>volatile</code> 表明变量是显式可变的，并且看似无用的变量访问（例如，通过指针）不应该被优化掉。例如：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">float</span> pi = <span class="number">3.14159f</span>;</span><br><span class="line"><span class="keyword">volatile</span> <span class="keyword">float</span> currentTemperature = <span class="number">40.0</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>const</code> 限定符除了能防止变量被意外改变之外，它还能辅助编译器进行优化。针对有回调函数或者信号处理函数更新的变量，我们可以将其定义为 <code>volatile</code> 从而避免编译器过度优化导致数据不一致。</p>
+<h2 id="存储类限定符"><a href="#存储类限定符" class="headerlink" title="存储类限定符"></a>存储类限定符</h2><p>存储类限定允许您定义变量在内存中的存储方式。<code>auto</code> 关键字用于定义函数内部的局部变量，当函数返回时，这是局部变量（自动变量）将自动被清理掉，这是函数内部的变量默认行为。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">void</span></span><br><span class="line">foo(<span class="keyword">int</span> value)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">auto</span> <span class="keyword">int</span> x = value;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>register</code> 关键字定义的变量被称为寄存器变量，它的行为与 <code>auto</code> 定义的变量几乎类似，稍有不同的是，该关键字表明该变量的使用频率极高，如果可能尽量将其放在寄存器中。如果变量被声明为 <code>register</code> 类型，__那么将不能对其进行取地址运算 (<code>&amp;</code>)__。这意味着您不能引用使用存储类寄存器声明的数组的元素。GCC 编译器在优化时可以很好的选择哪些变量使用被保存在寄存器中，因此寄存器变量很少使用。</p>
+<p><code>static</code> 限定符与 <code>auto</code> 的作用正好相反：当将 <code>static</code> 应用于函数内部或块内的变量时，即使函数完成或块结束之后，这些变量都将保存其值。这就是所谓的__静态存储持续期 (Static Storage Duration)__。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span></span><br><span class="line">sum (<span class="keyword">int</span> x)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> sumSoFar = <span class="number">0</span>;</span><br><span class="line">    sumSoFar = sumSoFar + x;</span><br><span class="line">    <span class="keyword">return</span> sumSoFar;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此外，您还可以在顶层（即不在函数内）将变量（或函数）声明为 <code>static</code>。这些变量（全局变量）仅在当前源文件可见，其它源文件则不可见。这就给 <code>static</code> 带来了双重含义；第二种意义则是__静态链接 (Static Linkage)__。在单独的文件中具有静态链接的两个函数或变量是完全独立的；在声明它的文件之外都不可见。</p>
+<p>声明为 <code>extern</code> 的未初始化变量的默认值为 <code>0</code>，<code>0.0</code> 或 <code>NULL</code>，具体值则取决于其类型。声明为 <code>auto</code> 和 <code>register</code> 的未初始化变量保留为初始化状态，因此不应假设这些变量保存特定的值。</p>
+<p><code>extern</code> 对于声明要链接到项目的所有源文件可见的变量很有用。变量声明时并不会为其分配存储空间，所以你无法在 <code>extern</code> 声明语句中进行初始化操作。您必须同时进行 <code>extern</code> 声明和非 <code>extern</code> 声明，实际上后者是变量的定义，它将为期分配存储空间。<code>extern</code> 声明语句可以重复多次。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="keyword">int</span> numberOfClients;</span><br><span class="line">...</span><br><span class="line"><span class="keyword">int</span> numberOfClients = <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Type-Qualifiers">https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Type-Qualifiers</a></p>
+]]></content>
+      <categories>
+        <category>编程</category>
+      </categories>
+      <tags>
+        <tag>C 语言</tag>
       </tags>
   </entry>
   <entry>
@@ -1655,48 +1655,6 @@ table th:nth-of-type(2) {
       </tags>
   </entry>
   <entry>
-    <title>PostgreSQL 持续归档</title>
-    <url>/2018/10/postgresql-continuous-archiving/</url>
-    <content><![CDATA[<p>无论何时，PostgreSQL 总是在集群的数据目录 pg_wal 下面维护一个 <em>Write Ahead Log</em> 日志记录。该日志记录了数据文件的所有变化。当数据库系统发生崩溃时，数据库系统可以通过重放最新检查点之后的 WAL 日志条目来恢复数据库的一致性。在 PostgreSQL 中，我们通过将文件系统级的备份与 WAL 日志的备份相结合可以实现三种策略的数据库备份。当需要进行数据库恢复时，我们先恢复文件系统的备份，随后通过重放备份的 WAL 日志使得数据库进入到当前状态。尽管该方法过于复杂，但是它拥有以下好处：</p>
-<ul>
-<li>我们不需要完全一致的文件系统备份作为起点。备份中的任何内部不一致都将通过日志重放进行更正 (这与崩溃恢复期间发生的情况没有显着差异)。因此，我们不需要文件系统快照功能，只需要 tar 或类似的归档工具。</li>
-<li>没有必要一直重放 WAL 条目到最后。我们可以在任何时候停止重放并拥有当时数据库的一致快照。因此，该技术支持时间点恢复 (Point-in-Time Recovery, PITR)。为此，我们可以将数据库还原到自从进行基本备份以后的任何状态。</li>
-<li>如果我们持续地将一系列 WAL 日志文件提供给另一台已加载相同基本备份文件的计算机，此时，我们就拥有了一个热备系统：在任何时候我们都可以启动这台机器，它将拥有与原数据库几乎一致的状态。</li>
-</ul>
-<p>与普通文件系统备份技术一样，该方法只能支持恢复整个数据库集群，而不能用于恢复其子集。同时，它也需要更多的归档空间：基本的文件系统备份可能很庞大，繁忙的系统将生成许多必须归档的 WAL 流量。尽管如此，在多数情况下，它仍然是需要高可靠性的首选备份技术。</p>
-<p>我们需要一系列连续归档 WAL 日志文件，这些文件至少可以延伸到备份的开始时间，从而确保连续归档 (许多数据库供应商也称为“在线备份”) 成功恢复。</p>
-<a id="more"></a>
-
-<h2 id="WAL-日志归档"><a href="#WAL-日志归档" class="headerlink" title="WAL 日志归档"></a>WAL 日志归档</h2><p>从抽象的意义上说，PostgreSQL 数据库系统会产生无限长的 WAL 日志记录序列。PostgreSQL 数据库该序列划分 WAL 段文件，通常每个段文件为 16MB (在构建 PostgreSQL 时可以更改段大小)。段文件的数字名称反映了它们在抽象 WAL 序列中的位置。当不使用 WAL 归档时，PostgreSQL 通常只需要创建几个段文件，然后通过将不再需要的段文件重命名为更高的段号来“回收”它们。</p>
-<p>当使用 WAL 日志归档时，我们需要在每个段文件填充后捕获它们的内容，并在段文件被回收再利用之前将该数据保存在其他某处。PostgreSQL 允许管理员指定要执行的 shell 命令，以将已完成的段文件复制到需要的位置。该命令可以简单的 cp 命令，也可以是复杂的 shell 脚步，一切都取决于用户。</p>
-<p>我们需要设置三个选项以便启用 WAL 日志归档： wal_level，archive_mode 和 archive_command。</p>
-<p><strong>wal_level__ - 必须为 replica 或者更高的级别。<br>__archive_mode</strong> - 设置为 on。<br>__archive_command__ - 通常为归档命令，其中 <code>%p</code> 被替换为要归档的文件的路径名，<code>%f</code> 被替换为要归档的文件的文件名。如果需要在命令中嵌入实际的 <code>％</code> 字符，请使用 <code>%%</code>。</p>
-<p>接下来我们尝试配置 WAL 日志归档，首先进行相关的准备工作，编译 PostgreSQL 10.4，初始化数据库，建立归档日志存储路径 (本例旨在使用 WAL 日志归档，因此就在本地建立目录来存储备份的 WAL 日志，通常的做法时备份到其他主机)，</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ pwd</span><br><span class="line">&#x2F;home&#x2F;postgres&#x2F;postgresql-10.4</span><br><span class="line">$ ls</span><br><span class="line">drwxr-xr-x  2 postgres postgres 4096 Oct 24 13:36 bin</span><br><span class="line">drwx------ 19 postgres postgres 4096 Oct 24 13:49 data</span><br><span class="line">drwxr-xr-x  6 postgres postgres 4096 Oct 24 13:36 include</span><br><span class="line">drwxr-xr-x  4 postgres postgres 4096 Oct 24 13:36 lib</span><br><span class="line">-rw-rw-r--  1 postgres postgres  177 Oct 24 13:39 pg-env.sh</span><br><span class="line">drwxr-xr-x  6 postgres postgres 4096 Oct 24 13:36 share</span><br><span class="line">$ cat pg-env.sh</span><br><span class="line">export PGHOME&#x3D;&#x2F;home&#x2F;postgres&#x2F;postgresql-10.4</span><br><span class="line">export PGDATA&#x3D;&#x2F;home&#x2F;postgres&#x2F;postgresql-10.4&#x2F;data</span><br><span class="line">export PATH&#x3D;$PGHOME&#x2F;bin:$PATH</span><br><span class="line">export LD_LIBRARY_PATH&#x3D;$PGHOME&#x2F;lib:$LD_LIBRARY_PATH</span><br><span class="line">$ mkdir wals            # 建立 WAL 日志备份目录</span><br><span class="line">$ . pg-env.sh           # 初始化环境变量</span><br><span class="line">$ initdb -D data        # 初始化数据库集群</span><br></pre></td></tr></table></figure>
-
-<p>接着修改 data/postgresql.conf 文件中的 wal_level，archive_mode 和 archive_command 参数。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wal_level &#x3D; replica</span><br><span class="line">archive_mode &#x3D; on</span><br><span class="line">archive_command &#x3D; &#39;test ! -f &#x2F;home&#x2F;postgres&#x2F;postgresql-10.4&#x2F;wals&#x2F;%f &amp;&amp; cp %p &#x2F;home&#x2F;postgres&#x2F;postgresql-10.4&#x2F;wals&#x2F;%f&#39;</span><br></pre></td></tr></table></figure>
-
-<p>按照上述操作进行，我们目前已经配置好了 WAL 日志归档，接下来我们运行数据库并创建一个基本备份 (即文件系统级备份) 并保存在当前目录。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ pg_ctl -D data -l logfile start</span><br><span class="line">$ psql -c &quot;SELECT pg_start_backup(&#39;label&#39;);&quot; postgres</span><br><span class="line">$ tar -C data -czvf pg_basebackup_backup.tar.gz .</span><br><span class="line">$ psql -c &quot;SELECT pg_stop_backup();&quot; postgres</span><br></pre></td></tr></table></figure>
-
-<p>此时，我们创建好了数据库集群的基本备份，之后我们便可以通过该基本备份并结合 WAL 日志备份进行恢复。紧接着，我们对数据库做一些修改，并停止数据库然后删除 data 目录。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ psql postgres</span><br><span class="line">psql (10.4)</span><br><span class="line">Type &quot;help&quot; for help.</span><br><span class="line"></span><br><span class="line">postgres&#x3D;# create table test (id int, name varchar(10));</span><br><span class="line">CREATE TABLE</span><br><span class="line">postgres&#x3D;# insert into test values (1, &#39;postgres&#39;);</span><br><span class="line">INSERT 0 1</span><br><span class="line">postgres&#x3D;# select * from test ;</span><br><span class="line"> id |   name</span><br><span class="line"> ----+----------</span><br><span class="line">   1 | postgres</span><br><span class="line">(1 row)</span><br><span class="line"></span><br><span class="line">postgres&#x3D;# \q</span><br><span class="line">$ pg_ctl -D data -l logfile stop</span><br><span class="line">$ rm -rf data</span><br></pre></td></tr></table></figure>
-
-<p>下面将演示如何使用基础备份及 WAL 日志备份恢复数据库。</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> initdb -D data1                    <span class="comment"># 重新初始化一个数据库集群</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> tar -C data1 -xvf pg_basebackup_backup.tar.gz</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cat &lt;&lt;END &gt; data1/recovery.conf    <span class="comment"># 创建恢复脚步</span></span></span><br><span class="line">restore_command = &#x27;cp /home/postgres/postgresql-10.4/wals/%f %p&#x27;</span><br><span class="line">END</span><br><span class="line"><span class="meta">$</span><span class="bash"> pg_ctl -D data1 -l logfile start   <span class="comment"># 恢复</span></span></span><br></pre></td></tr></table></figure>
-
-<p>在恢复完成之后，PostgreSQL 将把 recovery.conf 文件重命名为 recovery.done。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="https://www.postgresql.org/docs/10/static/continuous-archiving.html">https://www.postgresql.org/docs/10/static/continuous-archiving.html</a></p>
-]]></content>
-      <categories>
-        <category>数据库</category>
-      </categories>
-      <tags>
-        <tag>PostgreSQL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>PostgreSQL CREATE TABLE 查询计划树及执行计划树的生成</title>
     <url>/2019/05/postgresql-create-table-query-plan/</url>
     <content><![CDATA[<p>在<a href="/2019/05/postgresql-create-table-syntax-analysis/" title="上一篇文章">上一篇文章</a>中，我们主要分析了 <code>CREATE TABLE</code> 语句的的词法和语法，并简要说明了 PostgreSQL 的执行流程。本文将介绍 PostgreSQL 是如何将解析树转化为执行计划的。</p>
@@ -1736,6 +1694,48 @@ table th:nth-of-type(2) {
       <tags>
         <tag>PostgreSQL</tag>
         <tag>源码分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PostgreSQL 持续归档</title>
+    <url>/2018/10/postgresql-continuous-archiving/</url>
+    <content><![CDATA[<p>无论何时，PostgreSQL 总是在集群的数据目录 pg_wal 下面维护一个 <em>Write Ahead Log</em> 日志记录。该日志记录了数据文件的所有变化。当数据库系统发生崩溃时，数据库系统可以通过重放最新检查点之后的 WAL 日志条目来恢复数据库的一致性。在 PostgreSQL 中，我们通过将文件系统级的备份与 WAL 日志的备份相结合可以实现三种策略的数据库备份。当需要进行数据库恢复时，我们先恢复文件系统的备份，随后通过重放备份的 WAL 日志使得数据库进入到当前状态。尽管该方法过于复杂，但是它拥有以下好处：</p>
+<ul>
+<li>我们不需要完全一致的文件系统备份作为起点。备份中的任何内部不一致都将通过日志重放进行更正 (这与崩溃恢复期间发生的情况没有显着差异)。因此，我们不需要文件系统快照功能，只需要 tar 或类似的归档工具。</li>
+<li>没有必要一直重放 WAL 条目到最后。我们可以在任何时候停止重放并拥有当时数据库的一致快照。因此，该技术支持时间点恢复 (Point-in-Time Recovery, PITR)。为此，我们可以将数据库还原到自从进行基本备份以后的任何状态。</li>
+<li>如果我们持续地将一系列 WAL 日志文件提供给另一台已加载相同基本备份文件的计算机，此时，我们就拥有了一个热备系统：在任何时候我们都可以启动这台机器，它将拥有与原数据库几乎一致的状态。</li>
+</ul>
+<p>与普通文件系统备份技术一样，该方法只能支持恢复整个数据库集群，而不能用于恢复其子集。同时，它也需要更多的归档空间：基本的文件系统备份可能很庞大，繁忙的系统将生成许多必须归档的 WAL 流量。尽管如此，在多数情况下，它仍然是需要高可靠性的首选备份技术。</p>
+<p>我们需要一系列连续归档 WAL 日志文件，这些文件至少可以延伸到备份的开始时间，从而确保连续归档 (许多数据库供应商也称为“在线备份”) 成功恢复。</p>
+<a id="more"></a>
+
+<h2 id="WAL-日志归档"><a href="#WAL-日志归档" class="headerlink" title="WAL 日志归档"></a>WAL 日志归档</h2><p>从抽象的意义上说，PostgreSQL 数据库系统会产生无限长的 WAL 日志记录序列。PostgreSQL 数据库该序列划分 WAL 段文件，通常每个段文件为 16MB (在构建 PostgreSQL 时可以更改段大小)。段文件的数字名称反映了它们在抽象 WAL 序列中的位置。当不使用 WAL 归档时，PostgreSQL 通常只需要创建几个段文件，然后通过将不再需要的段文件重命名为更高的段号来“回收”它们。</p>
+<p>当使用 WAL 日志归档时，我们需要在每个段文件填充后捕获它们的内容，并在段文件被回收再利用之前将该数据保存在其他某处。PostgreSQL 允许管理员指定要执行的 shell 命令，以将已完成的段文件复制到需要的位置。该命令可以简单的 cp 命令，也可以是复杂的 shell 脚步，一切都取决于用户。</p>
+<p>我们需要设置三个选项以便启用 WAL 日志归档： wal_level，archive_mode 和 archive_command。</p>
+<p><strong>wal_level__ - 必须为 replica 或者更高的级别。<br>__archive_mode</strong> - 设置为 on。<br>__archive_command__ - 通常为归档命令，其中 <code>%p</code> 被替换为要归档的文件的路径名，<code>%f</code> 被替换为要归档的文件的文件名。如果需要在命令中嵌入实际的 <code>％</code> 字符，请使用 <code>%%</code>。</p>
+<p>接下来我们尝试配置 WAL 日志归档，首先进行相关的准备工作，编译 PostgreSQL 10.4，初始化数据库，建立归档日志存储路径 (本例旨在使用 WAL 日志归档，因此就在本地建立目录来存储备份的 WAL 日志，通常的做法时备份到其他主机)，</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ pwd</span><br><span class="line">&#x2F;home&#x2F;postgres&#x2F;postgresql-10.4</span><br><span class="line">$ ls</span><br><span class="line">drwxr-xr-x  2 postgres postgres 4096 Oct 24 13:36 bin</span><br><span class="line">drwx------ 19 postgres postgres 4096 Oct 24 13:49 data</span><br><span class="line">drwxr-xr-x  6 postgres postgres 4096 Oct 24 13:36 include</span><br><span class="line">drwxr-xr-x  4 postgres postgres 4096 Oct 24 13:36 lib</span><br><span class="line">-rw-rw-r--  1 postgres postgres  177 Oct 24 13:39 pg-env.sh</span><br><span class="line">drwxr-xr-x  6 postgres postgres 4096 Oct 24 13:36 share</span><br><span class="line">$ cat pg-env.sh</span><br><span class="line">export PGHOME&#x3D;&#x2F;home&#x2F;postgres&#x2F;postgresql-10.4</span><br><span class="line">export PGDATA&#x3D;&#x2F;home&#x2F;postgres&#x2F;postgresql-10.4&#x2F;data</span><br><span class="line">export PATH&#x3D;$PGHOME&#x2F;bin:$PATH</span><br><span class="line">export LD_LIBRARY_PATH&#x3D;$PGHOME&#x2F;lib:$LD_LIBRARY_PATH</span><br><span class="line">$ mkdir wals            # 建立 WAL 日志备份目录</span><br><span class="line">$ . pg-env.sh           # 初始化环境变量</span><br><span class="line">$ initdb -D data        # 初始化数据库集群</span><br></pre></td></tr></table></figure>
+
+<p>接着修改 data/postgresql.conf 文件中的 wal_level，archive_mode 和 archive_command 参数。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wal_level &#x3D; replica</span><br><span class="line">archive_mode &#x3D; on</span><br><span class="line">archive_command &#x3D; &#39;test ! -f &#x2F;home&#x2F;postgres&#x2F;postgresql-10.4&#x2F;wals&#x2F;%f &amp;&amp; cp %p &#x2F;home&#x2F;postgres&#x2F;postgresql-10.4&#x2F;wals&#x2F;%f&#39;</span><br></pre></td></tr></table></figure>
+
+<p>按照上述操作进行，我们目前已经配置好了 WAL 日志归档，接下来我们运行数据库并创建一个基本备份 (即文件系统级备份) 并保存在当前目录。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ pg_ctl -D data -l logfile start</span><br><span class="line">$ psql -c &quot;SELECT pg_start_backup(&#39;label&#39;);&quot; postgres</span><br><span class="line">$ tar -C data -czvf pg_basebackup_backup.tar.gz .</span><br><span class="line">$ psql -c &quot;SELECT pg_stop_backup();&quot; postgres</span><br></pre></td></tr></table></figure>
+
+<p>此时，我们创建好了数据库集群的基本备份，之后我们便可以通过该基本备份并结合 WAL 日志备份进行恢复。紧接着，我们对数据库做一些修改，并停止数据库然后删除 data 目录。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ psql postgres</span><br><span class="line">psql (10.4)</span><br><span class="line">Type &quot;help&quot; for help.</span><br><span class="line"></span><br><span class="line">postgres&#x3D;# create table test (id int, name varchar(10));</span><br><span class="line">CREATE TABLE</span><br><span class="line">postgres&#x3D;# insert into test values (1, &#39;postgres&#39;);</span><br><span class="line">INSERT 0 1</span><br><span class="line">postgres&#x3D;# select * from test ;</span><br><span class="line"> id |   name</span><br><span class="line"> ----+----------</span><br><span class="line">   1 | postgres</span><br><span class="line">(1 row)</span><br><span class="line"></span><br><span class="line">postgres&#x3D;# \q</span><br><span class="line">$ pg_ctl -D data -l logfile stop</span><br><span class="line">$ rm -rf data</span><br></pre></td></tr></table></figure>
+
+<p>下面将演示如何使用基础备份及 WAL 日志备份恢复数据库。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> initdb -D data1                    <span class="comment"># 重新初始化一个数据库集群</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> tar -C data1 -xvf pg_basebackup_backup.tar.gz</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cat &lt;&lt;END &gt; data1/recovery.conf    <span class="comment"># 创建恢复脚步</span></span></span><br><span class="line">restore_command = &#x27;cp /home/postgres/postgresql-10.4/wals/%f %p&#x27;</span><br><span class="line">END</span><br><span class="line"><span class="meta">$</span><span class="bash"> pg_ctl -D data1 -l logfile start   <span class="comment"># 恢复</span></span></span><br></pre></td></tr></table></figure>
+
+<p>在恢复完成之后，PostgreSQL 将把 recovery.conf 文件重命名为 recovery.done。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="https://www.postgresql.org/docs/10/static/continuous-archiving.html">https://www.postgresql.org/docs/10/static/continuous-archiving.html</a></p>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>PostgreSQL</tag>
       </tags>
   </entry>
   <entry>
@@ -2040,6 +2040,8 @@ table th:nth-of-type(2) {
     <title>PostgreSQL 优化 setitimer 系统调用</title>
     <url>/2020/08/postgresql-optimize-setitimer-system-calls/</url>
     <content><![CDATA[<p>当我们在使用 PostgreSQL 数据库并启用 <code>statement_timeout</code> 时，可以看到 <code>setitimer()</code> 函数的调用次数明显偏多。本文分析了 <a href="https://www.postgresql.org/message-id/CA%2BhUKG%2Bo6pbuHBJSGnud%3DTadsuXySWA7CCcPgCt2QE9F6_4iHQ%40mail.gmail.com">Thomas Munro 给出的关于 <code>setitimer()</code> 函数的优化</a>。</p>
+<a id="more"></a>
+
 <h2 id="基准测试"><a href="#基准测试" class="headerlink" title="基准测试"></a>基准测试</h2><p>为了方便分析，我们首先需要有一个基本的基准测试。我们使用下面的命令初始化数据库：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ initdb -D pgdata</span><br><span class="line">$ pg_ctl -l log -D pgdata start</span><br><span class="line">$ createdb testdb</span><br><span class="line">$ pgbench -i -s 10 testdb</span><br></pre></td></tr></table></figure>
 
