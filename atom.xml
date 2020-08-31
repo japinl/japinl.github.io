@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2020-08-28T23:26:29.479Z</updated>
+  <updated>2020-08-31T15:53:24.551Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>PostgreSQL 优化 setitimer 系统调用</title>
+    <link href="https://blog.japinli.top/2020/08/postgresql-optimize-setitimer-system-calls/"/>
+    <id>https://blog.japinli.top/2020/08/postgresql-optimize-setitimer-system-calls/</id>
+    <published>2020-08-31T14:46:59.000Z</published>
+    <updated>2020-08-31T15:53:24.551Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;当我们在使用 PostgreSQL 数据库并启用 &lt;code&gt;statement_timeout&lt;/code&gt; 时，可以看到 &lt;code&gt;setitimer()&lt;/code&gt; 函数的调用次数明显偏多。本文分析了 &lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="Database" scheme="https://blog.japinli.top/categories/Database/"/>
+    
+    
+    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
+    
+    <category term="源码分析" scheme="https://blog.japinli.top/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
   
   <entry>
     <title>Hexo NexT (v8.x) 主题添加近期文章</title>
@@ -421,27 +448,6 @@
     
     
     <category term="git" scheme="https://blog.japinli.top/tags/git/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>PostgreSQL 聚簇索引</title>
-    <link href="https://blog.japinli.top/2019/11/postgresql-cluster-index/"/>
-    <id>https://blog.japinli.top/2019/11/postgresql-cluster-index/</id>
-    <published>2019-11-27T13:06:33.000Z</published>
-    <updated>2020-08-23T11:23:21.131Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;聚簇索引是按照数据存放的物理位置为顺序的，每个表仅有一个聚簇索引。&lt;/p&gt;
-&lt;p&gt;MySQL 数据库中的 InnoDB 引擎中的主键即为聚簇索引，当我们在表上定义主键时，InnoDB 会将其用作聚簇索引，如果表上没有定义主键，那么 InnoDB 将会使用第一个全不为空的唯一性索引作为聚簇索引，如果表上即没有主键、也没有唯一性索引，那么 InnoDB 将会自动生成一个隐藏的 &lt;code&gt;GEN_CLUST_INDEX&lt;/code&gt; 索引作为聚簇索引。&lt;/p&gt;
-&lt;p&gt;PostgreSQL 在创建表时并不能指定聚簇索引，但是我们可以通过 &lt;code&gt;CLUSTER&lt;/code&gt; 来创建聚簇索引，本文主要介绍 PostgreSQL 数据库中的聚簇索引。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
-    
-    
-    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
     
   </entry>
   

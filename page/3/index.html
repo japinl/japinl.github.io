@@ -142,12 +142,12 @@
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">6</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">62</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">63</span></a>
 
   </li>
         <li class="menu-item menu-item-reading">
@@ -246,14 +246,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">62</span>
+          <span class="site-state-item-count">63</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -285,6 +285,11 @@
 	</div>
 	<ul class="links-of-blogroll-list recent-posts-list">
 	        <li class="my-links-of-blogroll-item">
+		    <a href="/2020/08/postgresql-optimize-setitimer-system-calls/" title="PostgreSQL 优化 setitimer 系统调用" target="">
+		    PostgreSQL 优化 setitimer 系统调用
+		    </a>
+		</li>
+	        <li class="my-links-of-blogroll-item">
 		    <a href="/2020/08/next-8-0-0-recent-posts/" title="Hexo NexT (v8.x) 主题添加近期文章" target="">
 		    Hexo NexT (v8.x) 主题添加近期文章
 		    </a>
@@ -302,11 +307,6 @@
 	        <li class="my-links-of-blogroll-item">
 		    <a href="/2020/07/create-u-bootloader-on-macos/" title="MacOS 上创建 U 盘启动器" target="">
 		    MacOS 上创建 U 盘启动器
-		    </a>
-		</li>
-	        <li class="my-links-of-blogroll-item">
-		    <a href="/2020/07/miwifi-breed-padavan/" title="小米路由器刷 Breed 和 Padavan 固件" target="">
-		    小米路由器刷 Breed 和 Padavan 固件
 		    </a>
 		</li>
 	</ul>
@@ -336,6 +336,119 @@
       
 
       
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2019/11/postgresql-cluster-index/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="Japin Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Japin">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/postgresql-cluster-index/" class="post-title-link" itemprop="url">PostgreSQL 聚簇索引</a>
+        </h2>
+
+        <div class="post-meta">
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-23 19:23:21" itemprop="dateModified" datetime="2020-08-23T19:23:21+08:00">2020-08-23</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/11/postgresql-cluster-index/" class="post-meta-item leancloud_visitors" data-flag-title="PostgreSQL 聚簇索引" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/11/postgresql-cluster-index/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/11/postgresql-cluster-index/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+              <span class="post-meta-item-text">本文字数：</span>
+              <span>7.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+              <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>聚簇索引是按照数据存放的物理位置为顺序的，每个表仅有一个聚簇索引。</p>
+<p>MySQL 数据库中的 InnoDB 引擎中的主键即为聚簇索引，当我们在表上定义主键时，InnoDB 会将其用作聚簇索引，如果表上没有定义主键，那么 InnoDB 将会使用第一个全不为空的唯一性索引作为聚簇索引，如果表上即没有主键、也没有唯一性索引，那么 InnoDB 将会自动生成一个隐藏的 <code>GEN_CLUST_INDEX</code> 索引作为聚簇索引。</p>
+<p>PostgreSQL 在创建表时并不能指定聚簇索引，但是我们可以通过 <code>CLUSTER</code> 来创建聚簇索引，本文主要介绍 PostgreSQL 数据库中的聚簇索引。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/11/postgresql-cluster-index/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -1367,120 +1480,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2019/08/postgresql-new-catalog/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="Japin Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Japin">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/08/postgresql-new-catalog/" class="post-title-link" itemprop="url">PostgreSQL 添加系统表</a>
-        </h2>
-
-        <div class="post-meta">
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-23 19:36:51" itemprop="dateModified" datetime="2020-08-23T19:36:51+08:00">2020-08-23</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2019/08/postgresql-new-catalog/" class="post-meta-item leancloud_visitors" data-flag-title="PostgreSQL 添加系统表" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/08/postgresql-new-catalog/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/postgresql-new-catalog/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-              <span class="post-meta-item-text">本文字数：</span>
-              <span>4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-              <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>本文将介绍如何在 PostgreSQL 中创建一个新的系统表。PostgreSQL 将系统表都存放在 <code>src/include/catalog</code> 目录下，如下图所示：</p>
-<img src="/2019/08/postgresql-new-catalog/catalogs.png" class="" title="PostgresQL 系统表目录">
-
-<p>从目录结构来看，我们大概可以猜测到 PostgreSQL 将系统表的定义和数据分别存放在两个不同的文件中，例如，系统表 <code>pg_class</code>，其表结构定义在 <code>pg_class.h</code> 文件中，而数据则在 <code>pg_class.dat</code> 文件中。此外每个表都在数据库内部都有一个唯一的 OID 来作为标识。PostgreSQL 提供了脚本来检查未使用的 OID 以及是否包含重复的 OID，它们分别为 <code>unused_oids</code> 和 <code>duplicate_oids</code>。所有的系统表都将由 <code>src/backend/catalog/Catalog.pm</code> 进行处理，该文件负责将系统表文件转换为 Perl 数据结构。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2019/08/postgresql-new-catalog/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1536,13 +1535,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">226k</span>
+    <span title="站点总字数">231k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:26</span>
+    <span title="站点阅读时长">3:30</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
