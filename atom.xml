@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2020-08-31T15:56:41.625Z</updated>
+  <updated>2020-09-01T13:45:48.571Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -21,14 +21,14 @@
     <link href="https://blog.japinli.top/2020/08/postgresql-optimize-setitimer-system-calls/"/>
     <id>https://blog.japinli.top/2020/08/postgresql-optimize-setitimer-system-calls/</id>
     <published>2020-08-31T14:46:59.000Z</published>
-    <updated>2020-08-31T15:56:41.625Z</updated>
+    <updated>2020-09-01T13:45:48.571Z</updated>
     
     
     <summary type="html">&lt;p&gt;当我们在使用 PostgreSQL 数据库并启用 &lt;code&gt;statement_timeout&lt;/code&gt; 时，可以看到 &lt;code&gt;setitimer()&lt;/code&gt; 函数的调用次数明显偏多。本文分析了 &lt;a href=&quot;https://www.postgresql.org/message-id/CA%2BhUKG%2Bo6pbuHBJSGnud%3DTadsuXySWA7CCcPgCt2QE9F6_4iHQ%40mail.gmail.com&quot;&gt;Thomas Munro 给出的关于 &lt;code&gt;setitimer()&lt;/code&gt; 函数的优化&lt;/a&gt;。&lt;/p&gt;</summary>
     
     
     
-    <category term="Database" scheme="https://blog.japinli.top/categories/Database/"/>
+    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
     
     
     <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
@@ -344,14 +344,14 @@
     <link href="https://blog.japinli.top/2020/02/postgresql-stream-replication/"/>
     <id>https://blog.japinli.top/2020/02/postgresql-stream-replication/</id>
     <published>2020-02-19T13:44:42.000Z</published>
-    <updated>2020-08-23T11:25:42.741Z</updated>
+    <updated>2020-09-01T13:22:25.137Z</updated>
     
     
     <summary type="html">&lt;p&gt;PostgreSQL 12 的流复制与之前的版本有所不同，主要有以下几点区别：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;PG12 将原有的属于 &lt;code&gt;recovery.conf&lt;/code&gt; 配置文件中配置项迁移到了 &lt;code&gt;postgresql.conf&lt;/code&gt; 文件中，在新系统中如果存在 &lt;code&gt;recovery.conf&lt;/code&gt; 文件，数据库将无法启动；&lt;/li&gt;
 &lt;li&gt;文件 &lt;code&gt;recovery.signal&lt;/code&gt; 和 &lt;code&gt;standby.signal&lt;/code&gt; 用于切换数据库为非主（non-primary）模式；&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;trigger_file&lt;/code&gt; 被修改为 &lt;code&gt;promote_trigger_file&lt;/code&gt; 并且只能在 &lt;code&gt;postgresql.conf&lt;/code&gt; 配置文件或服务器命令行进行配置；&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;trigger_file&lt;/code&gt; 被修改为 &lt;code&gt;promote_trigger_file&lt;/code&gt;，&lt;del&gt;并且只能在 &lt;code&gt;postgresql.conf&lt;/code&gt;&lt;/del&gt; 可在配置文件或服务器命令行进行配置；&lt;/li&gt;
 &lt;li&gt;最后，&lt;code&gt;standby_mode&lt;/code&gt; 参数被移除了。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;详细说明请&lt;a href=&quot;https://www.postgresql.org/docs/12/release-12.html&quot;&gt;移步官网&lt;/a&gt;。本文将在 Ubuntu 18.04 LTS 下搭建 PG12 的流复制系统。&lt;/p&gt;</summary>

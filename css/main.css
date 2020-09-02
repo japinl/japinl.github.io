@@ -285,9 +285,7 @@ tbody tr:hover {
 caption,
 th,
 td {
-  font-weight: normal;
   padding: 8px;
-  vertical-align: middle;
 }
 th,
 td {
@@ -852,7 +850,9 @@ pre code {
 .post-body .tabs ul.nav-tabs,
 .tabs-comment ul.nav-tabs {
   display: flex;
+  display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   margin: 0;
   padding: 0;
 }
@@ -1108,7 +1108,9 @@ pre code {
 }
 .comment-button-group {
   display: flex;
-  flex-wrap: wrap-reverse;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   justify-content: center;
   margin: 1em 0;
 }
@@ -1900,7 +1902,7 @@ pre code {
 .posts-collapse .post-content .post-header:hover::before {
   background: #222;
 }
-.posts-collapse .post-content .post-meta {
+.posts-collapse .post-content .post-meta-container {
   display: inline;
   font-size: 0.75em;
   margin-right: 10px;
@@ -2095,7 +2097,6 @@ pre code {
   color: var(--link-color);
   display: inline-block;
   position: relative;
-  vertical-align: top;
 }
 .posts-expand .post-title-link::before {
   background: var(--link-color);
@@ -2119,21 +2120,26 @@ pre code {
   display: inline-block;
   transform: rotate(30deg);
 }
-.posts-expand .post-meta {
+.posts-expand .post-meta-container {
   color: #999;
   font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 0.75em;
   margin-top: 3px;
 }
-.posts-expand .post-meta .post-description {
+.posts-expand .post-meta-container .post-description {
   font-size: 0.875em;
   margin-top: 2px;
 }
-.posts-expand .post-meta time {
+.posts-expand .post-meta-container time {
   border-bottom: 1px dashed #999;
   cursor: pointer;
 }
-.post-meta-item + .post-meta-item::before {
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.post-meta-item:not(:first-child)::before {
   content: '|';
   margin: 0 0.5em;
 }
@@ -2458,12 +2464,12 @@ ul.breadcrumb {
 ul.breadcrumb li {
   display: inline;
 }
-ul.breadcrumb li + li::before {
+ul.breadcrumb li:not(:first-child)::before {
   content: '/\00a0';
   font-weight: normal;
   padding: 0.5em;
 }
-ul.breadcrumb li + li:last-child {
+ul.breadcrumb li:last-child {
   font-weight: bold;
 }
 .tag-cloud {
@@ -2767,7 +2773,6 @@ mark.search-keyword {
   float: right;
   padding: 2px 5px;
   text-shadow: 1px 1px 0 rgba(0,0,0,0.1);
-  vertical-align: middle;
 }
 .sub-menu {
   margin: 0;
@@ -2842,9 +2847,9 @@ mark.search-keyword {
   color: #e34603;
 }
 .links-of-author {
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
-  margin-top: 10px;
   justify-content: center;
 }
 .links-of-author-item {
