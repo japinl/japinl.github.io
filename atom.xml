@@ -409,7 +409,7 @@
     <link href="https://blog.japinli.top/2019/12/git-discard-changes/"/>
     <id>https://blog.japinli.top/2019/12/git-discard-changes/</id>
     <published>2019-12-16T14:28:51.000Z</published>
-    <updated>2020-08-23T11:19:57.626Z</updated>
+    <updated>2020-09-03T13:09:38.096Z</updated>
     
     
     <summary type="html">&lt;p&gt;Git 中可以通过 &lt;code&gt;git checkout -- &amp;lt;file&amp;gt;...&lt;/code&gt; 来撤销当前工作空间的修改。例如，我们有以下文件已经做出了修改：&lt;/p&gt;
