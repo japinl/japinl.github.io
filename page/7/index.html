@@ -147,7 +147,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">63</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">64</span></a>
 
   </li>
         <li class="menu-item menu-item-reading">
@@ -246,7 +246,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">64</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -285,6 +285,11 @@
 	</div>
 	<ul class="links-of-blogroll-list recent-posts-list">
 	        <li class="my-links-of-blogroll-item">
+		    <a href="/2020/09/go-http-response-writer/" title="Go 语言 http 响应头设置" target="">
+		    Go 语言 http 响应头设置
+		    </a>
+		</li>
+	        <li class="my-links-of-blogroll-item">
 		    <a href="/2020/08/postgresql-optimize-setitimer-system-calls/" title="PostgreSQL 优化 setitimer 系统调用" target="">
 		    PostgreSQL 优化 setitimer 系统调用
 		    </a>
@@ -302,11 +307,6 @@
 	        <li class="my-links-of-blogroll-item">
 		    <a href="/2020/08/postgresql-shared-relations/" title="PostgreSQL 共享表" target="">
 		    PostgreSQL 共享表
-		    </a>
-		</li>
-	        <li class="my-links-of-blogroll-item">
-		    <a href="/2020/07/create-u-bootloader-on-macos/" title="MacOS 上创建 U 盘启动器" target="">
-		    MacOS 上创建 U 盘启动器
 		    </a>
 		</li>
 	</ul>
@@ -336,6 +336,131 @@
       
 
       
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2018/09/introduction-cstore-fdw-columnar-store/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/logo.jpg">
+      <meta itemprop="name" content="Japin Li">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Japin">
+    </span>
+
+    
+    
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/09/introduction-cstore-fdw-columnar-store/" class="post-title-link" itemprop="url">列存数据库 cstore_fdw 入门</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2020-08-23 19:21:47" itemprop="dateModified" datetime="2020-08-23T19:21:47+08:00">2020-08-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+        </span>
+    </span>
+
+  
+    <span id="/2018/09/introduction-cstore-fdw-columnar-store/" class="post-meta-item leancloud_visitors" data-flag-title="列存数据库 cstore_fdw 入门" title="阅读次数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span class="leancloud-visitors-count"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/09/introduction-cstore-fdw-columnar-store/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/09/introduction-cstore-fdw-columnar-store/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>Cstore_fdw 是 Citus Data 开发的一款开放源码的 PostgreSQL 列存扩展插件。列存储在数据批量导入的分析场景能够提供更好的性能。Cstore_fdw 通过只读取磁盘上相关的列数据来提升性能，同时，由于每列的数据来自同一个域，因此更利于数据压缩，cstore_fdw 提供 6~10 倍的数据压缩能力，从而减小了对磁盘存储的需求。</p>
+<p>Cstore_fdw 采用 Optimized Row Columnar (ORC) 格式作为其数据的物理存储格式。ORC 优化了 Facebook 的 RCFile 存储格式，并具有以下优点：</p>
+<ul>
+<li>压缩 (Compression) - 大约减少了 2~4 倍的内存和磁盘存储空间。易于扩展以支持不同的编码。</li>
+<li>列投影 (Column Projections) - 仅仅读取与该查询有关的数据列，提高了 I/O 效率。</li>
+<li>跳跃索引 (Skip Indexes) - 为每个行组 (Row Groups) 存储其最大值和最小值，并利用他们来跳过不相关的数据行。</li>
+</ul>
+<p>除此之外，cstore_fdw 使用了 PostgreSQL 的数据类型和 fdw API 编程接口，这样做的好处有以下几点：</p>
+<ul>
+<li>支持 40+ 的 PostgreSQL 数据类型，用户也可以创建并使用新的类型。</li>
+<li>统计信息收集，PostgreSQL 使用这些统计信息来评估不同的查询计划并选择最优查询计划的来执行。</li>
+<li>配置简单，用户只需要创建外部表并导入数据，之后就可以使用 SQL 进行查询。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/09/introduction-cstore-fdw-columnar-store/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -741,13 +866,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">231k</span>
+    <span title="站点总字数">236k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">3:30</span>
+    <span title="站点阅读时长">3:35</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动

@@ -1214,6 +1214,52 @@ table th:nth-of-type(2) {
       </tags>
   </entry>
   <entry>
+    <title>Go 语言 http 响应头设置</title>
+    <url>/2020/09/go-http-response-writer/</url>
+    <content><![CDATA[<p>Go 语言的 <code>net/http</code> 包为我们提供了一个 HTTP 客户端和服务器的实现，通过它我们可以快速的搭建一个 HTTP 服务器，本文记录一下在编写 HTTP 服务器时关于设置 HTTP 响应头遇到的一个小问题。</p>
+<a id="more"></a>
+
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>问题的表象是通过 <code>w.Header().Set(&quot;Content-Type&quot;, &quot;application/json&quot;)</code> （<code>w</code> 为 <code>http.ResponseWriter</code> 对象）无法设置响应头的 <code>Content-Type</code> 为 <code>application/json</code>。下面是是一个简单的示例：</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">        <span class="string">&quot;encoding/json&quot;</span></span><br><span class="line">        <span class="string">&quot;net/http&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Status <span class="keyword">struct</span> &#123;</span><br><span class="line">        Code    <span class="keyword">int</span></span><br><span class="line">        Message <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hello</span><span class="params">(w http.ResponseWriter, r *http.Request)</span></span> &#123;</span><br><span class="line">        res := Status&#123;Code: <span class="number">200</span>, Message: <span class="string">&quot;hello world!&quot;</span>&#125;</span><br><span class="line"></span><br><span class="line">        w.WriteHeader(<span class="number">200</span>)</span><br><span class="line">        w.Header().Set(<span class="string">&quot;Content-Type&quot;</span>, <span class="string">&quot;application/json&quot;</span>)</span><br><span class="line"></span><br><span class="line">        json.NewEncoder(w).Encode(&amp;res)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">        http.HandleFunc(<span class="string">&quot;/hello&quot;</span>, hello)</span><br><span class="line"></span><br><span class="line">        http.ListenAndServe(<span class="string">&quot;:8080&quot;</span>, <span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译并运行上面的程序，随后我们去访问可以看到如下所示的响应。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ curl -i http:&#x2F;&#x2F;localhost:8080&#x2F;hello</span><br><span class="line">HTTP&#x2F;1.1 200 OK</span><br><span class="line">Date: Mon, 14 Sep 2020 09:40:11 GMT</span><br><span class="line">Content-Length: 38</span><br><span class="line">Content-Type: text&#x2F;plain; charset&#x3D;utf-8</span><br><span class="line"></span><br><span class="line">&#123;&quot;Code&quot;:200,&quot;Message&quot;:&quot;hello world!&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从响应的结果可以看到，<code>Content-Type</code> 并没有被设置为我想要的 <code>application/json</code>。</p>
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>通过测试我发现，经过如下修改，就可以正确的设置 HTTP 响应头。</p>
+<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">diff --git a/main.go b/main.go</span><br><span class="line">index 8bec8e3..459fb77 100644</span><br><span class="line"><span class="comment">--- a/main.go</span></span><br><span class="line"><span class="comment">+++ b/main.go</span></span><br><span class="line">@@ -13,8 +13,8 @@ type Status struct &#123;</span><br><span class="line"> func hello(w http.ResponseWriter, r *http.Request) &#123;</span><br><span class="line">        res := Status&#123;Code: 200, Message: &quot;hello world!&quot;&#125;</span><br><span class="line"></span><br><span class="line"><span class="deletion">-       w.WriteHeader(200)</span></span><br><span class="line">        w.Header().Set(&quot;Content-Type&quot;, &quot;application/json&quot;)</span><br><span class="line"><span class="addition">+       w.WriteHeader(200)</span></span><br><span class="line"></span><br><span class="line">        json.NewEncoder(w).Encode(&amp;res)</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>以下是测试输出。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ curl -i http:&#x2F;&#x2F;localhost:8080&#x2F;hello</span><br><span class="line">HTTP&#x2F;1.1 200 OK</span><br><span class="line">Content-Type: application&#x2F;json</span><br><span class="line">Date: Mon, 14 Sep 2020 09:48:52 GMT</span><br><span class="line">Content-Length: 38</span><br><span class="line"></span><br><span class="line">&#123;&quot;Code&quot;:200,&quot;Message&quot;:&quot;hello world!&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是为什么呢？通过查看 <a href="https://github.com/golang/go/blob/master/src/net/http/server.go#L100">Go 语言的源码</a>，发现了如下内容：</p>
+<blockquote>
+<p> type ResponseWriter interface {<br>     // Header returns the header map that will be sent by<br>     // WriteHeader. The Header map also is the mechanism with which<br>     // Handlers can set HTTP trailers.<br>     //<br>     // Changing the header map after a call to WriteHeader (or<br>     // Write) has no effect unless the modified headers are<br>     // trailers.<br>     //<br>     // There are two ways to set Trailers. The preferred way is to<br>     // predeclare in the headers which trailers you will later<br>     // send by setting the “Trailer” header to the names of the<br>     // trailer keys which will come later. In this case, those<br>     // keys of the Header map are treated as if they were<br>     // trailers. See the example. The second way, for trailer<br>     // keys not known to the Handler until after the first Write,<br>     // is to prefix the Header map keys with the TrailerPrefix<br>     // constant value. See TrailerPrefix.<br>     //<br>     // To suppress automatic response headers (such as “Date”), set<br>     // their value to nil.<br>     Header() Header<br> …<br>}</p>
+</blockquote>
+<p>从注释我们可以看到，在调用了 <code>WriteHeader()</code> 或者是 <code>Write()</code> 函数之后去改变响应头（trailers 响应头除外）是没有效果的。<br>其实，在 Go 的文档里面也出现了上述注释，只是在读文档的时候不够仔细，导致忽略了这一点。</p>
+<p>关于 HTTP Trailers 的相关说明可以参考<a href="https://www.geeksforgeeks.org/http-headers-trailer/">这里</a>。</p>
+<p>我们从源码角度来做简要分析。首先，我们看看 <code>ResponseWriter</code> 是如何获取 <code>Header</code> 结构的，如下所示。</p>
+<figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(w *response)</span> <span class="title">Header</span><span class="params">()</span> <span class="title">Header</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> w.cw.header == <span class="literal">nil</span> &amp;&amp; w.wroteHeader &amp;&amp; !w.cw.wroteHeader &#123;</span><br><span class="line">                <span class="comment">// Accessing the header between logically writing it</span></span><br><span class="line">                <span class="comment">// and physically writing it means we need to allocate</span></span><br><span class="line">                <span class="comment">// a clone to snapshot the logically written state.</span></span><br><span class="line">                w.cw.header = w.handlerHeader.Clone()</span><br><span class="line">        &#125;</span><br><span class="line">        w.calledHeader = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">return</span> w.handlerHeader</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面的代码可以看出，我们在调用 <code>w.Header()</code> 函数获取的其实是 <code>w.handlerHeader</code>，因此，我们添加的 HTTP 响应头也是存放在该结构中的。接着我们在来看看 <code>w.WriteHeader()</code> 函数是如何实现的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">func (w *response) WriteHeader(code int) &#123;</span><br><span class="line">        if w.conn.hijacked() &#123;</span><br><span class="line">                caller :&#x3D; relevantCaller()</span><br><span class="line">                w.conn.server.logf(&quot;http: response.WriteHeader on hijacked connection from %s (%s:%d)&quot;, caller.Function, path.Base(caller.File), caller.Line)</span><br><span class="line">                return</span><br><span class="line">        &#125;</span><br><span class="line">        if w.wroteHeader &#123;</span><br><span class="line">                caller :&#x3D; relevantCaller()</span><br><span class="line">                w.conn.server.logf(&quot;http: superfluous response.WriteHeader call from %s (%s:%d)&quot;, caller.Function, path.Base(caller.File), caller.Line)</span><br><span class="line">                return</span><br><span class="line">        &#125;</span><br><span class="line">        checkWriteHeaderCode(code)</span><br><span class="line">        w.wroteHeader &#x3D; true</span><br><span class="line">        w.status &#x3D; code</span><br><span class="line"></span><br><span class="line">        if w.calledHeader &amp;&amp; w.cw.header &#x3D;&#x3D; nil &#123;</span><br><span class="line">                w.cw.header &#x3D; w.handlerHeader.Clone()</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if cl :&#x3D; w.handlerHeader.get(&quot;Content-Length&quot;); cl !&#x3D; &quot;&quot; &#123;</span><br><span class="line">                v, err :&#x3D; strconv.ParseInt(cl, 10, 64)</span><br><span class="line">                if err &#x3D;&#x3D; nil &amp;&amp; v &gt;&#x3D; 0 &#123;</span><br><span class="line">                        w.contentLength &#x3D; v</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                        w.conn.server.logf(&quot;http: invalid Content-Length of %q&quot;, cl)</span><br><span class="line">                        w.handlerHeader.Del(&quot;Content-Length&quot;)</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们注意到，<code>w.WriteHeader()</code> 将 <code>w.handlerHeader</code> 中的 HTTP 响应头克隆到了 <code>w.cw.header</code> 中（其中 <code>cw</code> 为 <code>*chunkWriter</code> 类型）。最终，<code>net/http</code> 是通过 <code>func (cw *chunkWriter) writeHeader(p []byte)</code>  函数来完成响应头的处理的，而这其中关于 HTTP 响应头，除了 Trailer 类型的响应头外，都是从 <code>cw.header</code>  中获取的，因此，在调用 <code>w.WriteHeader()</code> 之后，我们设置的非 Trailer 响应头是无效的。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="https://github.com/golang/go/blob/master/src/net/http/server.go">https://github.com/golang/go/blob/master/src/net/http/server.go</a><br>[2] <a href="https://golang.org/pkg/net/http/">https://golang.org/pkg/net/http/</a><br>[3] <a href="https://www.geeksforgeeks.org/http-headers-trailer/">https://www.geeksforgeeks.org/http-headers-trailer/</a></p>
+<div class="just-for-fun">
+笑林广记 - 原不识字
+
+<p>有延师教其子者，师至，主人曰：“家贫，多失礼于先生，奈何！”<br>师曰：“何言之谦，仆固无不可者。”<br>主人曰：“蔬食，可乎？”<br>曰：“可。”<br>主人曰：“家无藏获，凡洒扫庭除，启闭门户，劳先生为之，可乎？”<br>曰：“可。”<br>主人曰：“或家人妇子欲买零星杂物，屈先生一行，可乎？”<br>曰：“可。”<br>主人曰：“如此，幸甚！”<br>师曰：“仆亦有一言，愿主人勿讶焉。”<br>主人问何言？<br>师曰：“自愧幼时不学耳！”<br>主人曰：“何言之谦。”<br>师曰：“不敢欺，仆实不识一字。”</p>
+</div>
+]]></content>
+      <categories>
+        <category>编程</category>
+      </categories>
+      <tags>
+        <tag>Go</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/2018/08/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
@@ -1235,21 +1281,6 @@ table th:nth-of-type(2) {
       </categories>
       <tags>
         <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何学习 Emacs</title>
-    <url>/2019/03/how-to-learn-emacs/</url>
-    <content><![CDATA[<img src="/2019/03/how-to-learn-emacs/How-to-Learn-Emacs-v2-Large.png" class="" title="How to Learn Emacs">
-
-
-<p><a href="http://sachachua.com/blog/2013/05/how-to-learn-emacs-a-hand-drawn-one-pager-for-beginners/">上图</a>来自于 <a href="http://sachachua.com/blog/">Sacha Chua</a> 的博客。她的博客记录许多关于学习 Emacs 的资源。</p>
-]]></content>
-      <categories>
-        <category>杂项</category>
-      </categories>
-      <tags>
-        <tag>Emacs</tag>
       </tags>
   </entry>
   <entry>
@@ -1370,6 +1401,21 @@ table th:nth-of-type(2) {
         <tag>PostgreSQL</tag>
         <tag>cstore_fdw</tag>
         <tag>列存</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何学习 Emacs</title>
+    <url>/2019/03/how-to-learn-emacs/</url>
+    <content><![CDATA[<img src="/2019/03/how-to-learn-emacs/How-to-Learn-Emacs-v2-Large.png" class="" title="How to Learn Emacs">
+
+
+<p><a href="http://sachachua.com/blog/2013/05/how-to-learn-emacs-a-hand-drawn-one-pager-for-beginners/">上图</a>来自于 <a href="http://sachachua.com/blog/">Sacha Chua</a> 的博客。她的博客记录许多关于学习 Emacs 的资源。</p>
+]]></content>
+      <categories>
+        <category>杂项</category>
+      </categories>
+      <tags>
+        <tag>Emacs</tag>
       </tags>
   </entry>
   <entry>

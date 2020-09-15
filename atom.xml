@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2020-09-01T13:45:48.571Z</updated>
+  <updated>2020-09-14T14:20:24.710Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -15,6 +15,25 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Go 语言 http 响应头设置</title>
+    <link href="https://blog.japinli.top/2020/09/go-http-response-writer/"/>
+    <id>https://blog.japinli.top/2020/09/go-http-response-writer/</id>
+    <published>2020-09-14T13:21:49.000Z</published>
+    <updated>2020-09-14T14:20:24.710Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Go 语言的 &lt;code&gt;net/http&lt;/code&gt; 包为我们提供了一个 HTTP 客户端和服务器的实现，通过它我们可以快速的搭建一个 HTTP 服务器，本文记录一下在编写 HTTP 服务器时关于设置 HTTP 响应头遇到的一个小问题。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="编程" scheme="https://blog.japinli.top/categories/%E7%BC%96%E7%A8%8B/"/>
+    
+    
+    <category term="Go" scheme="https://blog.japinli.top/tags/Go/"/>
+    
+  </entry>
   
   <entry>
     <title>PostgreSQL 优化 setitimer 系统调用</title>
@@ -416,25 +435,6 @@
 &lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ git status&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;On branch hunghudb-11.3beta&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Changes not staged for commit:&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  (use &amp;quot;git add &amp;lt;file&amp;gt;...&amp;quot; to update what will be committed)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  (use &amp;quot;git checkout -- &amp;lt;file&amp;gt;...&amp;quot; to discard changes in working directory)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;backend&amp;#x2F;postmaster&amp;#x2F;pgstat.c&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;backend&amp;#x2F;replication&amp;#x2F;logical&amp;#x2F;reorderbuffer.c&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;backend&amp;#x2F;storage&amp;#x2F;file&amp;#x2F;buffile.c&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;include&amp;#x2F;pgstat.h&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;include&amp;#x2F;replication&amp;#x2F;reorderbuffer.h&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;include&amp;#x2F;storage&amp;#x2F;buffile.h&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 
 &lt;p&gt;如果此时我想要撤销这些修改，我们应该怎么做呢？&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="杂项" scheme="https://blog.japinli.top/categories/%E6%9D%82%E9%A1%B9/"/>
-    
-    
-    <category term="git" scheme="https://blog.japinli.top/tags/git/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>初识 git blame</title>
-    <link href="https://blog.japinli.top/2019/12/git-blame/"/>
-    <id>https://blog.japinli.top/2019/12/git-blame/</id>
-    <published>2019-12-14T03:25:05.000Z</published>
-    <updated>2020-08-23T11:19:40.486Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;最近在向 PostgreSQL 社区提交 patch 时，发现其维护者很快就定位到了代码何时由谁更改了，作为一个萌新，我也不好意思问:(，只能自己下来查找资料，经过一番搜索，发现了 &lt;code&gt;git blame&lt;/code&gt; 这个命令。&lt;/p&gt;</summary>
     
     
     

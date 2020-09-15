@@ -2989,3 +2989,9 @@ mark.search-keyword {
 .custom-black {
   margin-bottom: 60px;
 }
+.just-for-fun {
+  font-size: 13px;
+  color: #b39cd0;
+  border-top: 1px solid #4b4453;
+  padding-top: 10px;
+}
