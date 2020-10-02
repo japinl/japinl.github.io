@@ -22,30 +22,35 @@
     var CONFIG = {"hostname":"blog.japinli.top","root":"/","scheme":"Gemini","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Japin">
-<meta property="og:url" content="https://blog.japinli.top/index.html">
+  <meta name="description" content="最近在查看 PostgreSQL 数据库中内存分配相关的代码时，我发现 palloc() 和 palloc0() 函数存在大量的冗余代码。本着减少冗余代码的想法，我将修改后的代码提交到社区，得到的反馈是这样修改会影响整体效率。本文简要分析一下这是如何影响效率的。 PATCH 文件我提交的 PATCH 文件如下所示，其实非常简单，本质上就是将 palloc0() 函数中的部分代码改由 palloc(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PostgreSQL palloc0 函数优化">
+<meta property="og:url" content="https://blog.japinli.top/2020/10/postgresql-palloc0/index.html">
 <meta property="og:site_name" content="Japin">
+<meta property="og:description" content="最近在查看 PostgreSQL 数据库中内存分配相关的代码时，我发现 palloc() 和 palloc0() 函数存在大量的冗余代码。本着减少冗余代码的想法，我将修改后的代码提交到社区，得到的反馈是这样修改会影响整体效率。本文简要分析一下这是如何影响效率的。 PATCH 文件我提交的 PATCH 文件如下所示，其实非常简单，本质上就是将 palloc0() 函数中的部分代码改由 palloc(">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-10-02T14:45:16.000Z">
+<meta property="article:modified_time" content="2020-10-02T15:45:38.421Z">
 <meta property="article:author" content="Japin Li">
-<meta property="article:tag" content="C&#x2F;C++, PostgreSQL">
+<meta property="article:tag" content="PostgreSQL">
+<meta property="article:tag" content="源码分析">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://blog.japinli.top/">
+<link rel="canonical" href="https://blog.japinli.top/2020/10/postgresql-palloc0/">
 
 
 <script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>Japin</title>
+  <title>PostgreSQL palloc0 函数优化 | Japin</title>
   
 
 
@@ -219,7 +224,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -231,6 +236,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#PATCH-%E6%96%87%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">PATCH 文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">链接</span></a></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -332,11 +338,12 @@
 </noscript>
 
 
-    <div class="main-inner index posts-expand">
+    <div class="main-inner post posts-expand">
       
 
       
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -355,10 +362,9 @@
     
     
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/10/postgresql-palloc0/" class="post-title-link" itemprop="url">PostgreSQL palloc0 函数优化</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          PostgreSQL palloc0 函数优化
+        </h1>
 
         <div class="post-meta-container">
           <div class="post-meta">
@@ -424,7 +430,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <p>最近在查看 PostgreSQL 数据库中内存分配相关的代码时，我发现 <code>palloc()</code> 和 <code>palloc0()</code> 函数存在大量的冗余代码。本着减少冗余代码的想法，我将修改后的代码提交到社区，得到的反馈是这样修改会影响整体效率。本文简要分析一下这是如何影响效率的。</p>
+        <p>最近在查看 PostgreSQL 数据库中内存分配相关的代码时，我发现 <code>palloc()</code> 和 <code>palloc0()</code> 函数存在大量的冗余代码。本着减少冗余代码的想法，我将修改后的代码提交到社区，得到的反馈是这样修改会影响整体效率。本文简要分析一下这是如何影响效率的。</p>
 <h2 id="PATCH-文件"><a href="#PATCH-文件" class="headerlink" title="PATCH 文件"></a>PATCH 文件</h2><p>我提交的 PATCH 文件如下所示，其实非常简单，本质上就是将 <code>palloc0()</code> 函数中的部分代码改由 <code>palloc()</code> 函数来实现。</p>
 <figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">diff --git a/src/backend/utils/mmgr/mcxt.c b/src/backend/utils/mmgr/mcxt.c</span><br><span class="line">index dda70ef9f3..cb07958a1f 100644</span><br><span class="line"><span class="comment">--- a/src/backend/utils/mmgr/mcxt.c</span></span><br><span class="line"><span class="comment">+++ b/src/backend/utils/mmgr/mcxt.c</span></span><br><span class="line">@@ -982,28 +982,8 @@ palloc0(Size size)</span><br><span class="line"> &#123;</span><br><span class="line"> 	/* duplicates MemoryContextAllocZero to avoid increased overhead */</span><br><span class="line"> 	void	   *ret;</span><br><span class="line"><span class="deletion">-	MemoryContext context = CurrentMemoryContext;</span></span><br><span class="line"><span class="deletion">-</span></span><br><span class="line"><span class="deletion">-	AssertArg(MemoryContextIsValid(context));</span></span><br><span class="line"><span class="deletion">-	AssertNotInCriticalSection(context);</span></span><br><span class="line"></span><br><span class="line"><span class="deletion">-	if (!AllocSizeIsValid(size))</span></span><br><span class="line"><span class="deletion">-		elog(ERROR, &quot;invalid memory alloc request size %zu&quot;, size);</span></span><br><span class="line"><span class="deletion">-</span></span><br><span class="line"><span class="deletion">-	context-&gt;isReset = false;</span></span><br><span class="line"><span class="deletion">-</span></span><br><span class="line"><span class="deletion">-	ret = context-&gt;methods-&gt;alloc(context, size);</span></span><br><span class="line"><span class="deletion">-	if (unlikely(ret == NULL))</span></span><br><span class="line"><span class="deletion">-	&#123;</span></span><br><span class="line"><span class="deletion">-		MemoryContextStats(TopMemoryContext);</span></span><br><span class="line"><span class="deletion">-		ereport(ERROR,</span></span><br><span class="line"><span class="deletion">-				(errcode(ERRCODE_OUT_OF_MEMORY),</span></span><br><span class="line"><span class="deletion">-				 errmsg(&quot;out of memory&quot;),</span></span><br><span class="line"><span class="deletion">-				 errdetail(&quot;Failed on request of size %zu in memory context \&quot;%s\&quot;.&quot;,</span></span><br><span class="line"><span class="deletion">-						   size, context-&gt;name)));</span></span><br><span class="line"><span class="deletion">-	&#125;</span></span><br><span class="line"><span class="deletion">-</span></span><br><span class="line"><span class="deletion">-	VALGRIND_MEMPOOL_ALLOC(context, ret, size);</span></span><br><span class="line"><span class="addition">+	ret = palloc(size);</span></span><br><span class="line"></span><br><span class="line"> 	MemSetAligned(ret, 0, size);</span><br></pre></td></tr></table></figure>
 
@@ -442,1045 +448,66 @@
 <p>讹诈得财，蜀人谓之敲钉锤。<br>一广文善敲钉锤，见一生员在泮池旁出小恭，上前扭住吓之曰：“尔身列学门，擅在泮池解手，无礼已极。”<br>饬门斗：“押至明伦堂重惩，为大不敬者戒。”<br>生员央之曰：“生员一时错误，情愿认罚。”<br>广文云：“好在是出小恭，若是出大恭，定罚银十两。小恭五两可也。”<br>生员曰：“我这身边带银一块，重十两，愿分一半奉送。”<br>广文云：“何必分，全给了我就是了。”<br>生员说：“老师讲明，小恭五两，因何又要十两？”<br>广文曰：“不妨，你尽管全给了我，以后准你泮池旁再出大恭一次，让你五两。千万不可与外人说，恐坏了我的学规。”</p>
 </div>
 
-      
     </div>
 
     
     
     
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2019/08/postgresql-new-catalog/" rel="bookmark">PostgreSQL 添加系统表</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2020/08/postgresql-shared-relations/" rel="bookmark">PostgreSQL 共享表</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2019/11/postgresql-system-function/" rel="bookmark">PostgreSQL 自定义系统函数</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2019/08/postgresql-system-attribute/" rel="bookmark">PostgreSQL 系统属性添加</a></div>
+    </li>
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2020/08/postgresql-optimize-setitimer-system-calls/" rel="bookmark">PostgreSQL 优化 setitimer 系统调用</a></div>
+    </li>
+  </ul>
+
 
     <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2020/09/go-http-response-writer/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="Japin Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Japin">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/09/go-http-response-writer/" class="post-title-link" itemprop="url">Go 语言 http 响应头设置</a>
-        </h2>
 
-        <div class="post-meta-container">
-          <div class="post-meta">
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-09-14 22:20:24" itemprop="dateModified" datetime="2020-09-14T22:20:24+08:00">2020-09-14</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E7%BC%96%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">编程</span></a>
-        </span>
-    </span>
-
-  
-    <span id="/2020/09/go-http-response-writer/" class="post-meta-item leancloud_visitors" data-flag-title="Go 语言 http 响应头设置" title="阅读次数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span class="leancloud-visitors-count"></span>
-    </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/09/go-http-response-writer/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/go-http-response-writer/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>4.8k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>Go 语言的 <code>net/http</code> 包为我们提供了一个 HTTP 客户端和服务器的实现，通过它我们可以快速的搭建一个 HTTP 服务器，本文记录一下在编写 HTTP 服务器时关于设置 HTTP 响应头遇到的一个小问题。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/09/go-http-response-writer/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2020/08/postgresql-optimize-setitimer-system-calls/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="Japin Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Japin">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/08/postgresql-optimize-setitimer-system-calls/" class="post-title-link" itemprop="url">PostgreSQL 优化 setitimer 系统调用</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-09-01 21:45:48" itemprop="dateModified" datetime="2020-09-01T21:45:48+08:00">2020-09-01</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-        </span>
-    </span>
-
-  
-    <span id="/2020/08/postgresql-optimize-setitimer-system-calls/" class="post-meta-item leancloud_visitors" data-flag-title="PostgreSQL 优化 setitimer 系统调用" title="阅读次数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span class="leancloud-visitors-count"></span>
-    </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/08/postgresql-optimize-setitimer-system-calls/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/postgresql-optimize-setitimer-system-calls/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>4.6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>当我们在使用 PostgreSQL 数据库并启用 <code>statement_timeout</code> 时，可以看到 <code>setitimer()</code> 函数的调用次数明显偏多。本文分析了 <a target="_blank" rel="noopener" href="https://www.postgresql.org/message-id/CA%2BhUKG%2Bo6pbuHBJSGnud%3DTadsuXySWA7CCcPgCt2QE9F6_4iHQ%40mail.gmail.com">Thomas Munro 给出的关于 <code>setitimer()</code> 函数的优化</a>。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/08/postgresql-optimize-setitimer-system-calls/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2020/08/next-8-0-0-recent-posts/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="Japin Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Japin">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/08/next-8-0-0-recent-posts/" class="post-title-link" itemprop="url">Hexo NexT (v8.x) 主题添加近期文章</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-08-29 07:26:29" itemprop="dateModified" datetime="2020-08-29T07:26:29+08:00">2020-08-29</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E5%8D%9A%E5%AE%A2/" itemprop="url" rel="index"><span itemprop="name">博客</span></a>
-        </span>
-    </span>
-
-  
-    <span id="/2020/08/next-8-0-0-recent-posts/" class="post-meta-item leancloud_visitors" data-flag-title="Hexo NexT (v8.x) 主题添加近期文章" title="阅读次数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span class="leancloud-visitors-count"></span>
-    </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/08/next-8-0-0-recent-posts/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/next-8-0-0-recent-posts/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>最近将博客由 NexT-v5.x 迁移到 NexT-v8.x 版本，这其中有很多东西已将发生变化了。本文简要介绍一下如何在新版中加入近期文章的功能。NexT-v8.x 版本将模版文件由原来的 <code>swig</code> 变更为 <code>njk</code> 后缀，因此，之前的近期文章的功能不再适用，我们需要稍作修改。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/08/next-8-0-0-recent-posts/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2020/08/postgresql-backtrace/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="Japin Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Japin">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/08/postgresql-backtrace/" class="post-title-link" itemprop="url">PostgreSQL 13 - backtrace 功能预览</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-08-23 19:23:12" itemprop="dateModified" datetime="2020-08-23T19:23:12+08:00">2020-08-23</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-        </span>
-    </span>
-
-  
-    <span id="/2020/08/postgresql-backtrace/" class="post-meta-item leancloud_visitors" data-flag-title="PostgreSQL 13 - backtrace 功能预览" title="阅读次数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span class="leancloud-visitors-count"></span>
-    </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/08/postgresql-backtrace/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/postgresql-backtrace/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>4.6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>目前在 Greenplum、MySQL 数据库中均支持 backtrace 功能，现在 PostgreSQL 13-devel 版本中也新增了这个功能，我们可以在服务器日志中记录堆栈信息。</p>
-<img src="/2020/08/postgresql-backtrace/backtrace.png" class="" title="Backtrace 提交记录">
-
-<p>本文将对该功能进行简要介绍。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/08/postgresql-backtrace/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2020/08/postgresql-shared-relations/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="Japin Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Japin">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/08/postgresql-shared-relations/" class="post-title-link" itemprop="url">PostgreSQL 共享表</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-08-23 19:25:24" itemprop="dateModified" datetime="2020-08-23T19:25:24+08:00">2020-08-23</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-        </span>
-    </span>
-
-  
-    <span id="/2020/08/postgresql-shared-relations/" class="post-meta-item leancloud_visitors" data-flag-title="PostgreSQL 共享表" title="阅读次数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span class="leancloud-visitors-count"></span>
-    </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/08/postgresql-shared-relations/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/postgresql-shared-relations/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>12k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>11 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>PostgreSQL 数据库中提供的某些系统表是 Cluster 级别共享的，他们在数据库内部被称为 <code>shared_relation</code>，本文就介绍一下 PostgreSQL 是如何创建共享表的。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/08/postgresql-shared-relations/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2020/07/create-u-bootloader-on-macos/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="Japin Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Japin">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/create-u-bootloader-on-macos/" class="post-title-link" itemprop="url">MacOS 上创建 U 盘启动器</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-08-23 19:16:57" itemprop="dateModified" datetime="2020-08-23T19:16:57+08:00">2020-08-23</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%9D%82%E9%A1%B9/" itemprop="url" rel="index"><span itemprop="name">杂项</span></a>
-        </span>
-    </span>
-
-  
-    <span id="/2020/07/create-u-bootloader-on-macos/" class="post-meta-item leancloud_visitors" data-flag-title="MacOS 上创建 U 盘启动器" title="阅读次数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span class="leancloud-visitors-count"></span>
-    </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/create-u-bootloader-on-macos/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/create-u-bootloader-on-macos/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.7k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>本文记载了如何在 MacOS 平台制作 U 盘安装镜像，这里主要使用到了 hdiutil，diskutil 和 dd 三个命令。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/create-u-bootloader-on-macos/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2020/07/miwifi-breed-padavan/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="Japin Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Japin">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/miwifi-breed-padavan/" class="post-title-link" itemprop="url">小米路由器刷 Breed 和 Padavan 固件</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-08-23 19:22:20" itemprop="dateModified" datetime="2020-08-23T19:22:20+08:00">2020-08-23</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%9D%82%E9%A1%B9/" itemprop="url" rel="index"><span itemprop="name">杂项</span></a>
-        </span>
-    </span>
-
-  
-    <span id="/2020/07/miwifi-breed-padavan/" class="post-meta-item leancloud_visitors" data-flag-title="小米路由器刷 Breed 和 Padavan 固件" title="阅读次数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span class="leancloud-visitors-count"></span>
-    </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/miwifi-breed-padavan/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/miwifi-breed-padavan/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.7k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>本文主要记录一下小米路由器 3G 刷 breed 和 padavan 的过程。</p>
+<div class="post-copyright">
 <ul>
-<li><a target="_blank" rel="noopener" href="https://openwrt.org/docs/techref/bootloader/breed">Breed</a> 是嵌入式设备的引导和恢复环境的简称。</li>
-<li>Padavan 是由俄罗斯人基于华硕源码开发的针对 mtk 芯片的固件。</li>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Japin Li
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://blog.japinli.top/2020/10/postgresql-palloc0/" title="PostgreSQL palloc0 函数优化">https://blog.japinli.top/2020/10/postgresql-palloc0/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
 </ul>
-<p>我将整个过程分为分为 5 个步骤，更新 ROM、开启 SSH、备份路由器、刷 breed、刷 padavan。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/miwifi-breed-padavan/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2020/06/postgresql-alter-system/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="Japin Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Japin">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/06/postgresql-alter-system/" class="post-title-link" itemprop="url">PostgreSQL 修改配置参数</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-08-23 19:22:54" itemprop="dateModified" datetime="2020-08-23T19:22:54+08:00">2020-08-23</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-        </span>
-    </span>
-
-  
-    <span id="/2020/06/postgresql-alter-system/" class="post-meta-item leancloud_visitors" data-flag-title="PostgreSQL 修改配置参数" title="阅读次数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span class="leancloud-visitors-count"></span>
-    </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/06/postgresql-alter-system/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/06/postgresql-alter-system/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>4.2k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>4 分钟</span>
-    </span>
 </div>
 
-        </div>
-      </header>
+          <div class="post-tags">
+              <a href="/tags/PostgreSQL/" rel="tag"><i class="fa fa-tag"></i> PostgreSQL</a>
+              <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"><i class="fa fa-tag"></i> 源码分析</a>
+          </div>
 
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>今天在使用 <code>ALTER SYSTEM</code> 来修改 PostgreSQL 参数时遇到无法启动数据库的问题。如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">postgres&#x3D;# ALTER SYSTEM SET shared_preload_libraries TO &#39;pg_buffercache,passwordcheck&#39;;</span><br><span class="line">ALTER SYSTEM</span><br><span class="line">postgres&#x3D;# \q</span><br><span class="line">$ pg_ctl restart</span><br><span class="line">waiting for server to shut down.... done</span><br><span class="line">server stopped</span><br><span class="line">waiting for server to start....postgres: could not access directory &quot;&#x2F;Users&#x2F;japinli&#x2F;Codes&#x2F;postgresql&#x2F;pg&#x2F;data&quot;: No such file or directory</span><br><span class="line">Run initdb or pg_basebackup to initialize a PostgreSQL data directory.</span><br><span class="line"> stopped waiting</span><br><span class="line">pg_ctl: could not start server</span><br><span class="line">Examine the log output.</span><br></pre></td></tr></table></figure>
-
-<p>你是否也遇到了这样的问题呢？其实这都是由于我们先入为主的思想导致的，<code>ALTER SYSTEM</code> 支持以逗号分割的列表，而这类参数的修改不需要使用引号。因此，正确的使用方式如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ALTER SYSTEM SET shared_preload_libraries TO pg_buffercache, passwordcheck;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/06/postgresql-alter-system/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://blog.japinli.top/2020/06/postgresql-system-identifier/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/logo.jpg">
-      <meta itemprop="name" content="Japin Li">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Japin">
-    </span>
-
-    
-    
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/06/postgresql-system-identifier/" class="post-title-link" itemprop="url">PostgreSQL 数据库系统标识符</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-08-23 19:26:18" itemprop="dateModified" datetime="2020-08-23T19:26:18+08:00">2020-08-23</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-        </span>
-    </span>
-
-  
-    <span id="/2020/06/postgresql-system-identifier/" class="post-meta-item leancloud_visitors" data-flag-title="PostgreSQL 数据库系统标识符" title="阅读次数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span class="leancloud-visitors-count"></span>
-    </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/06/postgresql-system-identifier/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/06/postgresql-system-identifier/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>2.2k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>我们都知道 PostgreSQL 针对每个数据库集群实例，都会有一个唯一的标识符 - __system identifier__。那么这个标识符是如何生成的呢？本文将对其进行简要的分析。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/06/postgresql-system-identifier/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/09/go-http-response-writer/" rel="prev" title="Go 语言 http 响应头设置">
+                  <i class="fa fa-chevron-left"></i> Go 语言 http 响应头设置
+                </a>
             </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
+            <div class="post-nav-item">
+            </div>
+          </div>
     </footer>
   </article>
   
@@ -1488,14 +515,9 @@
   
 
 
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
-  </nav>
-
-
 
       
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -1596,7 +618,7 @@ NexT.utils.loadComments('#valine-comments', () => {
   NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', () => {
     new Valine(Object.assign({
       el  : '#valine-comments',
-      path: "/",
+      path: "/2020/10/postgresql-palloc0/",
     }, {"enable":true,"appId":"rwarexb07A58sdb9Xp5RyQRw-gzGzoHsz","appKey":"zPiGgSOJ5I1qJMAVXWBgRWe6","placeholder":"Just go go","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"lang":"zh-CN","visitor":true,"comment_count":true,"recordIP":false,"serverURLs":null,"enableQQ":false,"requiredFields":[]}
     ));
   }, window.Valine);

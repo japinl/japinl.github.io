@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2020-09-14T14:20:24.710Z</updated>
+  <updated>2020-10-02T15:45:38.421Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>PostgreSQL palloc0 函数优化</title>
+    <link href="https://blog.japinli.top/2020/10/postgresql-palloc0/"/>
+    <id>https://blog.japinli.top/2020/10/postgresql-palloc0/</id>
+    <published>2020-10-02T14:45:16.000Z</published>
+    <updated>2020-10-02T15:45:38.421Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;最近在查看 PostgreSQL 数据库中内存分配相关的代码时，我发现 &lt;code&gt;palloc()&lt;/code&gt; 和 &lt;code&gt;palloc0()&lt;/code&gt;</summary>
+        
+      
+    
+    
+    
+    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
+    
+    <category term="源码分析" scheme="https://blog.japinli.top/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
   
   <entry>
     <title>Go 语言 http 响应头设置</title>
@@ -420,28 +447,6 @@
     
     
     <category term="C 语言" scheme="https://blog.japinli.top/tags/C-%E8%AF%AD%E8%A8%80/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Git 撤销已经修改的文件</title>
-    <link href="https://blog.japinli.top/2019/12/git-discard-changes/"/>
-    <id>https://blog.japinli.top/2019/12/git-discard-changes/</id>
-    <published>2019-12-16T14:28:51.000Z</published>
-    <updated>2020-09-03T13:09:38.096Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;Git 中可以通过 &lt;code&gt;git checkout -- &amp;lt;file&amp;gt;...&lt;/code&gt; 来撤销当前工作空间的修改。例如，我们有以下文件已经做出了修改：&lt;/p&gt;
-&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ git status&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;On branch hunghudb-11.3beta&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;Changes not staged for commit:&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  (use &amp;quot;git add &amp;lt;file&amp;gt;...&amp;quot; to update what will be committed)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  (use &amp;quot;git checkout -- &amp;lt;file&amp;gt;...&amp;quot; to discard changes in working directory)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;backend&amp;#x2F;postmaster&amp;#x2F;pgstat.c&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;backend&amp;#x2F;replication&amp;#x2F;logical&amp;#x2F;reorderbuffer.c&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;backend&amp;#x2F;storage&amp;#x2F;file&amp;#x2F;buffile.c&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;include&amp;#x2F;pgstat.h&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;include&amp;#x2F;replication&amp;#x2F;reorderbuffer.h&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        modified:   src&amp;#x2F;include&amp;#x2F;storage&amp;#x2F;buffile.h&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;p&gt;如果此时我想要撤销这些修改，我们应该怎么做呢？&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="杂项" scheme="https://blog.japinli.top/categories/%E6%9D%82%E9%A1%B9/"/>
-    
-    
-    <category term="git" scheme="https://blog.japinli.top/tags/git/"/>
     
   </entry>
   
