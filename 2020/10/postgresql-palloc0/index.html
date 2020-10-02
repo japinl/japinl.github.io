@@ -22,15 +22,15 @@
     var CONFIG = {"hostname":"blog.japinli.top","root":"/","scheme":"Gemini","version":"8.0.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}};
   </script>
 
-  <meta name="description" content="最近在查看 PostgreSQL 数据库中内存分配相关的代码时，我发现 palloc() 和 palloc0() 函数存在大量的冗余代码。本着减少冗余代码的想法，我将修改后的代码提交到社区，得到的反馈是这样修改会影响整体效率。本文简要分析一下这是如何影响效率的。 PATCH 文件我提交的 PATCH 文件如下所示，其实非常简单，本质上就是将 palloc0() 函数中的部分代码改由 palloc(">
+  <meta name="description" content="最近在查看 PostgreSQL 数据库中内存分配相关的代码时，我发现 palloc() 和 palloc0() 函数存在大量的冗余代码。本着减少冗余代码的想法，我将修改后的代码提交到社区，得到的反馈是这样修改会影响整体效率。本文简要分析一下这是如何影响效率的。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PostgreSQL palloc0 函数优化">
 <meta property="og:url" content="https://blog.japinli.top/2020/10/postgresql-palloc0/index.html">
 <meta property="og:site_name" content="Japin">
-<meta property="og:description" content="最近在查看 PostgreSQL 数据库中内存分配相关的代码时，我发现 palloc() 和 palloc0() 函数存在大量的冗余代码。本着减少冗余代码的想法，我将修改后的代码提交到社区，得到的反馈是这样修改会影响整体效率。本文简要分析一下这是如何影响效率的。 PATCH 文件我提交的 PATCH 文件如下所示，其实非常简单，本质上就是将 palloc0() 函数中的部分代码改由 palloc(">
+<meta property="og:description" content="最近在查看 PostgreSQL 数据库中内存分配相关的代码时，我发现 palloc() 和 palloc0() 函数存在大量的冗余代码。本着减少冗余代码的想法，我将修改后的代码提交到社区，得到的反馈是这样修改会影响整体效率。本文简要分析一下这是如何影响效率的。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-10-02T14:45:16.000Z">
-<meta property="article:modified_time" content="2020-10-02T15:45:38.421Z">
+<meta property="article:modified_time" content="2020-10-02T15:48:44.743Z">
 <meta property="article:author" content="Japin Li">
 <meta property="article:tag" content="PostgreSQL">
 <meta property="article:tag" content="源码分析">
@@ -373,7 +373,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2020-10-02 23:45:38" itemprop="dateModified" datetime="2020-10-02T23:45:38+08:00">2020-10-02</time>
+        <time title="修改时间：2020-10-02 23:48:44" itemprop="dateModified" datetime="2020-10-02T23:48:44+08:00">2020-10-02</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -431,6 +431,8 @@
     
     <div class="post-body" itemprop="articleBody">
         <p>最近在查看 PostgreSQL 数据库中内存分配相关的代码时，我发现 <code>palloc()</code> 和 <code>palloc0()</code> 函数存在大量的冗余代码。本着减少冗余代码的想法，我将修改后的代码提交到社区，得到的反馈是这样修改会影响整体效率。本文简要分析一下这是如何影响效率的。</p>
+<a id="more"></a>
+
 <h2 id="PATCH-文件"><a href="#PATCH-文件" class="headerlink" title="PATCH 文件"></a>PATCH 文件</h2><p>我提交的 PATCH 文件如下所示，其实非常简单，本质上就是将 <code>palloc0()</code> 函数中的部分代码改由 <code>palloc()</code> 函数来实现。</p>
 <figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">diff --git a/src/backend/utils/mmgr/mcxt.c b/src/backend/utils/mmgr/mcxt.c</span><br><span class="line">index dda70ef9f3..cb07958a1f 100644</span><br><span class="line"><span class="comment">--- a/src/backend/utils/mmgr/mcxt.c</span></span><br><span class="line"><span class="comment">+++ b/src/backend/utils/mmgr/mcxt.c</span></span><br><span class="line">@@ -982,28 +982,8 @@ palloc0(Size size)</span><br><span class="line"> &#123;</span><br><span class="line"> 	/* duplicates MemoryContextAllocZero to avoid increased overhead */</span><br><span class="line"> 	void	   *ret;</span><br><span class="line"><span class="deletion">-	MemoryContext context = CurrentMemoryContext;</span></span><br><span class="line"><span class="deletion">-</span></span><br><span class="line"><span class="deletion">-	AssertArg(MemoryContextIsValid(context));</span></span><br><span class="line"><span class="deletion">-	AssertNotInCriticalSection(context);</span></span><br><span class="line"></span><br><span class="line"><span class="deletion">-	if (!AllocSizeIsValid(size))</span></span><br><span class="line"><span class="deletion">-		elog(ERROR, &quot;invalid memory alloc request size %zu&quot;, size);</span></span><br><span class="line"><span class="deletion">-</span></span><br><span class="line"><span class="deletion">-	context-&gt;isReset = false;</span></span><br><span class="line"><span class="deletion">-</span></span><br><span class="line"><span class="deletion">-	ret = context-&gt;methods-&gt;alloc(context, size);</span></span><br><span class="line"><span class="deletion">-	if (unlikely(ret == NULL))</span></span><br><span class="line"><span class="deletion">-	&#123;</span></span><br><span class="line"><span class="deletion">-		MemoryContextStats(TopMemoryContext);</span></span><br><span class="line"><span class="deletion">-		ereport(ERROR,</span></span><br><span class="line"><span class="deletion">-				(errcode(ERRCODE_OUT_OF_MEMORY),</span></span><br><span class="line"><span class="deletion">-				 errmsg(&quot;out of memory&quot;),</span></span><br><span class="line"><span class="deletion">-				 errdetail(&quot;Failed on request of size %zu in memory context \&quot;%s\&quot;.&quot;,</span></span><br><span class="line"><span class="deletion">-						   size, context-&gt;name)));</span></span><br><span class="line"><span class="deletion">-	&#125;</span></span><br><span class="line"><span class="deletion">-</span></span><br><span class="line"><span class="deletion">-	VALGRIND_MEMPOOL_ALLOC(context, ret, size);</span></span><br><span class="line"><span class="addition">+	ret = palloc(size);</span></span><br><span class="line"></span><br><span class="line"> 	MemSetAligned(ret, 0, size);</span><br></pre></td></tr></table></figure>
 
