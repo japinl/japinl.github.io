@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2020-10-02T15:48:44.743Z</updated>
+  <updated>2020-10-07T03:12:46.317Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://blog.japinli.top/2020/10/postgresql-palloc0/"/>
     <id>https://blog.japinli.top/2020/10/postgresql-palloc0/</id>
     <published>2020-10-02T14:45:16.000Z</published>
-    <updated>2020-10-02T15:48:44.743Z</updated>
+    <updated>2020-10-07T03:12:46.317Z</updated>
     
     
     <summary type="html">&lt;p&gt;最近在查看 PostgreSQL 数据库中内存分配相关的代码时，我发现 &lt;code&gt;palloc()&lt;/code&gt; 和 &lt;code&gt;palloc0()&lt;/code&gt; 函数存在大量的冗余代码。本着减少冗余代码的想法，我将修改后的代码提交到社区，得到的反馈是这样修改会影响整体效率。本文简要分析一下这是如何影响效率的。&lt;/p&gt;</summary>
