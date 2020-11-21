@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2020-10-07T03:12:46.317Z</updated>
+  <updated>2020-11-21T05:32:37.458Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -15,6 +15,25 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>再谈 PostgreSQL 行级安全策略</title>
+    <link href="https://blog.japinli.top/2020/11/postgresql-row-level-security-v2/"/>
+    <id>https://blog.japinli.top/2020/11/postgresql-row-level-security-v2/</id>
+    <published>2020-11-21T05:32:49.000Z</published>
+    <updated>2020-11-21T05:32:37.458Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;在 &lt;a href=&quot;/2019/07/postgresql-row-level-security-policy/&quot; title=&quot;PostgreSQL 行级安全策略的使用&quot;&gt;PostgreSQL 行级安全策略的使用&lt;/a&gt;一文中，我简要介绍了如何使用行级安全策略，最近因为工作需要对其又有了新的认识，故在此记录一下。本文主要介绍行级安全策略中用户权限和策略表达式（&lt;code&gt;USING&lt;/code&gt; 和 &lt;code&gt;CHECK&lt;/code&gt;）。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
+    
+  </entry>
   
   <entry>
     <title>PostgreSQL palloc0 函数优化</title>
@@ -422,25 +441,6 @@
     
     
     <category term="gdb" scheme="https://blog.japinli.top/tags/gdb/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>C 程序结构和范围</title>
-    <link href="https://blog.japinli.top/2020/01/C-program-structure-and-scope/"/>
-    <id>https://blog.japinli.top/2020/01/C-program-structure-and-scope/</id>
-    <published>2020-01-09T14:51:27.000Z</published>
-    <updated>2020-08-23T11:15:23.395Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;在之前的几篇关于 C 语言的文章中，我们以及掌握了 C 语言的基本要素，本文主要介绍 C 语言的程序结构和范围。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="编程" scheme="https://blog.japinli.top/categories/%E7%BC%96%E7%A8%8B/"/>
-    
-    
-    <category term="C 语言" scheme="https://blog.japinli.top/tags/C-%E8%AF%AD%E8%A8%80/"/>
     
   </entry>
   
