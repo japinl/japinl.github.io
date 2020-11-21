@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://blog.japinli.top/2020/08/postgresql-optimize-setitimer-system-calls/</loc>
+    
+    <lastmod>2020-11-21</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://blog.japinli.top/2020/11/postgresql-row-level-security-v2/</loc>
     
     <lastmod>2020-11-21</lastmod>
@@ -40,13 +47,6 @@
     <loc>https://blog.japinli.top/2019/12/git-discard-changes/</loc>
     
     <lastmod>2020-09-03</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.japinli.top/2020/08/postgresql-optimize-setitimer-system-calls/</loc>
-    
-    <lastmod>2020-09-01</lastmod>
     
   </url>
   

@@ -80,7 +80,7 @@
     <link href="https://blog.japinli.top/2020/08/postgresql-optimize-setitimer-system-calls/"/>
     <id>https://blog.japinli.top/2020/08/postgresql-optimize-setitimer-system-calls/</id>
     <published>2020-08-31T14:46:59.000Z</published>
-    <updated>2020-09-01T13:45:48.571Z</updated>
+    <updated>2020-11-21T06:19:12.324Z</updated>
     
     
     <summary type="html">&lt;p&gt;当我们在使用 PostgreSQL 数据库并启用 &lt;code&gt;statement_timeout&lt;/code&gt; 时，可以看到 &lt;code&gt;setitimer()&lt;/code&gt; 函数的调用次数明显偏多。本文分析了 &lt;a href=&quot;https://www.postgresql.org/message-id/CA%2BhUKG%2Bo6pbuHBJSGnud%3DTadsuXySWA7CCcPgCt2QE9F6_4iHQ%40mail.gmail.com&quot;&gt;Thomas Munro 给出的关于 &lt;code&gt;setitimer()&lt;/code&gt; 函数的优化&lt;/a&gt;。&lt;/p&gt;</summary>
