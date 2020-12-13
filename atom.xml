@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2020-11-21T05:32:37.458Z</updated>
+  <updated>2020-12-13T09:59:43.048Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -17,11 +17,37 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>PostgreSQL 逻辑复制</title>
+    <link href="https://blog.japinli.top/2020/12/postgresql-logical-replication/"/>
+    <id>https://blog.japinli.top/2020/12/postgresql-logical-replication/</id>
+    <published>2020-12-13T09:37:55.000Z</published>
+    <updated>2020-12-13T09:59:43.048Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;PostgreSQL 数据库在 9.0 中引入了物理复制，之前的文章中也有介绍。物理复制将主库中所有的更改都通过 WAL 日志流式地传输到备库中，备库通过重放 WAL 日志来实现同步。但是，物理复制也有其自身的局限性。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;不能执行有选择性的复制，或者说不支持复制部分数据库对象；&lt;/li&gt;
+&lt;li&gt;不能在不同的数据大版本之间进行复制，例如，pg10 -&amp;gt; pg12 是无法通过物理复制来实现同步的；&lt;/li&gt;
+&lt;li&gt;不能在不同平台之间进行复制，例如，Linux 和 Windows 之间不能使用物理复制来实现同步；&lt;/li&gt;
+&lt;li&gt;备库无法提供写入操作。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;PostgreSQL 在版本 10 中引入了逻辑复制，它用于解决上述物理复制的局限性，同时业务复制开辟了一个新的方向。逻辑复制使用发布和订阅模式，一个或多个订阅者可以订阅一个发布者上的一个或多个发布。订阅者最初会从发布者那里收到复制的数据库对象的副本，并在同一对象上实时进行后续更改。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
+    
+  </entry>
+  
+  <entry>
     <title>再谈 PostgreSQL 行级安全策略</title>
     <link href="https://blog.japinli.top/2020/11/postgresql-row-level-security-v2/"/>
     <id>https://blog.japinli.top/2020/11/postgresql-row-level-security-v2/</id>
     <published>2020-11-21T05:32:49.000Z</published>
-    <updated>2020-11-21T05:32:37.458Z</updated>
+    <updated>2020-11-21T11:45:39.452Z</updated>
     
     
     <summary type="html">&lt;p&gt;在 &lt;a href=&quot;/2019/07/postgresql-row-level-security-policy/&quot; title=&quot;PostgreSQL 行级安全策略的使用&quot;&gt;PostgreSQL 行级安全策略的使用&lt;/a&gt;一文中，我简要介绍了如何使用行级安全策略，最近因为工作需要对其又有了新的认识，故在此记录一下。本文主要介绍行级安全策略中用户权限和策略表达式（&lt;code&gt;USING&lt;/code&gt; 和 &lt;code&gt;CHECK&lt;/code&gt;）。&lt;/p&gt;</summary>
@@ -421,26 +447,6 @@
     
     
     <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>GDB 基本使用</title>
-    <link href="https://blog.japinli.top/2020/01/getting-in-and-out-of-gdb/"/>
-    <id>https://blog.japinli.top/2020/01/getting-in-and-out-of-gdb/</id>
-    <published>2020-01-13T14:42:31.000Z</published>
-    <updated>2020-08-23T11:19:30.483Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;在工作中经常使用 GDB 来调试程序，但是一直都没有系统的进行学习过，为此，我打算对其进行一个系统的学习，学习的主要材料来自 GNU GDB 文档 &lt;a href=&quot;https://sourceware.org/gdb/current/onlinedocs/gdb/&quot;&gt;Debugging with GDB&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;本文主要包括如何运行以及退出 GDB，通常，我们使用 &lt;code&gt;gdb&lt;/code&gt; 即可进入 GDB，而 &lt;code&gt;quit&lt;/code&gt; 命令或者 &lt;code&gt;Ctrl-d&lt;/code&gt; 快捷键便可以退出 GDB。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="杂项" scheme="https://blog.japinli.top/categories/%E6%9D%82%E9%A1%B9/"/>
-    
-    
-    <category term="gdb" scheme="https://blog.japinli.top/tags/gdb/"/>
     
   </entry>
   
