@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2020-12-13T09:59:43.048Z</updated>
+  <updated>2020-12-27T09:47:47.580Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://blog.japinli.top/2020/12/postgresql-logical-replication/"/>
     <id>https://blog.japinli.top/2020/12/postgresql-logical-replication/</id>
     <published>2020-12-13T09:37:55.000Z</published>
-    <updated>2020-12-13T09:59:43.048Z</updated>
+    <updated>2020-12-27T09:47:47.580Z</updated>
     
     
     <summary type="html">&lt;p&gt;PostgreSQL 数据库在 9.0 中引入了物理复制，之前的文章中也有介绍。物理复制将主库中所有的更改都通过 WAL 日志流式地传输到备库中，备库通过重放 WAL 日志来实现同步。但是，物理复制也有其自身的局限性。&lt;/p&gt;
