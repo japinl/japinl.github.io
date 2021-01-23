@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2020-12-27T09:47:47.580Z</updated>
+  <updated>2021-01-23T15:50:17.428Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>PostgreSQL 空闲会话超时</title>
+    <link href="https://blog.japinli.top/2021/01/postgresql-idle-session-timeout/"/>
+    <id>https://blog.japinli.top/2021/01/postgresql-idle-session-timeout/</id>
+    <published>2021-01-23T14:50:11.000Z</published>
+    <updated>2021-01-23T15:50:17.428Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;经过约八个月的努力，终于完成了 PostgreSQL 空闲会话超时断开的功能，该功能将在版本 14 中发布。这是我第一次向 PostgreSQL</summary>
+        
+      
+    
+    
+    
+    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
+    
+  </entry>
   
   <entry>
     <title>PostgreSQL 逻辑复制</title>
@@ -414,32 +439,6 @@
 
 &lt;p&gt;从警告中可以看到，PostgreSQL 已经给出了明确提示。然而在 PostgreSQL 12.2 中，创建 HASH 索引则没有上述提示：&lt;/p&gt;
 &lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;postgres&amp;#x3D;# create index idx_hash_id on hash_table using hash(id);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;CREATE INDEX&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
-    
-    
-    
-    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
-    
-    
-    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>PostgreSQL 12 流复制配置</title>
-    <link href="https://blog.japinli.top/2020/02/postgresql-stream-replication/"/>
-    <id>https://blog.japinli.top/2020/02/postgresql-stream-replication/</id>
-    <published>2020-02-19T13:44:42.000Z</published>
-    <updated>2020-09-01T13:22:25.137Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;PostgreSQL 12 的流复制与之前的版本有所不同，主要有以下几点区别：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;PG12 将原有的属于 &lt;code&gt;recovery.conf&lt;/code&gt; 配置文件中配置项迁移到了 &lt;code&gt;postgresql.conf&lt;/code&gt; 文件中，在新系统中如果存在 &lt;code&gt;recovery.conf&lt;/code&gt; 文件，数据库将无法启动；&lt;/li&gt;
-&lt;li&gt;文件 &lt;code&gt;recovery.signal&lt;/code&gt; 和 &lt;code&gt;standby.signal&lt;/code&gt; 用于切换数据库为非主（non-primary）模式；&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;trigger_file&lt;/code&gt; 被修改为 &lt;code&gt;promote_trigger_file&lt;/code&gt;，&lt;del&gt;并且只能在 &lt;code&gt;postgresql.conf&lt;/code&gt;&lt;/del&gt; 可在配置文件或服务器命令行进行配置；&lt;/li&gt;
-&lt;li&gt;最后，&lt;code&gt;standby_mode&lt;/code&gt; 参数被移除了。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;详细说明请&lt;a href=&quot;https://www.postgresql.org/docs/12/release-12.html&quot;&gt;移步官网&lt;/a&gt;。本文将在 Ubuntu 18.04 LTS 下搭建 PG12 的流复制系统。&lt;/p&gt;</summary>
     
     
     
