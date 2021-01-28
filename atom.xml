@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2021-01-23T15:50:17.428Z</updated>
+  <updated>2021-01-28T14:56:56.726Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -21,16 +21,11 @@
     <link href="https://blog.japinli.top/2021/01/postgresql-idle-session-timeout/"/>
     <id>https://blog.japinli.top/2021/01/postgresql-idle-session-timeout/</id>
     <published>2021-01-23T14:50:11.000Z</published>
-    <updated>2021-01-23T15:50:17.428Z</updated>
+    <updated>2021-01-28T14:56:56.726Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;经过约八个月的努力，终于完成了 PostgreSQL 空闲会话超时断开的功能，该功能将在版本 14 中发布。这是我第一次向 PostgreSQL</summary>
-        
-      
+    <summary type="html">&lt;p&gt;经过约八个月的努力，终于完成了 PostgreSQL 空闲会话超时断开的功能，该功能将在版本 14 中发布。这是我第一次向 PostgreSQL 提供功能，虽然之前也有向社区提供过补丁，但是这次整个功能（相对比较简单）被接受还是比较高兴的，感谢社区各位大佬的帮助和反馈。&lt;/p&gt;
+&lt;img src=&quot;/2021/01/postgresql-idle-session-timeout/idle_session_timeout-commit-message.png&quot; class=&quot;&quot;&gt;</summary>
     
     
     
