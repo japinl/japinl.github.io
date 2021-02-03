@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2021-01-28T14:56:56.726Z</updated>
+  <updated>2021-02-03T12:53:05.706Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>PostgreSQL auto_explain 插件内存泄露</title>
+    <link href="https://blog.japinli.top/2021/02/postgresql-auto-explain-memory-leak/"/>
+    <id>https://blog.japinli.top/2021/02/postgresql-auto-explain-memory-leak/</id>
+    <published>2021-02-03T11:48:39.000Z</published>
+    <updated>2021-02-03T12:53:05.706Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;最近看到 PostgreSQL 邮件列表中有人说 auto_explain 插件在特定情况下会导致 OOM 问题，经过一番分析发现原来是由于内存上下文的问题导致的。目前该泄露已经修复，并合并到代码库中。&lt;/p&gt;
+&lt;img src=&quot;/2021/02/postgresql-auto-explain-memory-leak/fix_memory_leak_in_auto_explain.png&quot; class=&quot;&quot;&gt;</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
+    
+    <category term="源码" scheme="https://blog.japinli.top/tags/%E6%BA%90%E7%A0%81/"/>
+    
+  </entry>
   
   <entry>
     <title>PostgreSQL 空闲会话超时</title>
@@ -417,30 +439,6 @@
     
     
     <category term="Ubuntu" scheme="https://blog.japinli.top/tags/Ubuntu/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>PostgreSQL HASH 索引拾遗</title>
-    <link href="https://blog.japinli.top/2020/02/postgresql-hash-index/"/>
-    <id>https://blog.japinli.top/2020/02/postgresql-hash-index/</id>
-    <published>2020-02-20T14:21:40.000Z</published>
-    <updated>2020-08-23T11:24:40.155Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;PostgreSQL 的 HASH 索引在 9.6 和 10 版本中有所不同，主要的区别在于 HASH 索引在 9.6 及其之前的版本中不会记录在 WAL 日志中，然而在 10 及其之后的版本这个已经被修复了。&lt;/p&gt;
-&lt;p&gt;例如，下面是在 PostgreSQL 9.6.17 中创建 HASH 索引。&lt;/p&gt;
-&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;postgres&amp;#x3D;# CREATE INDEX id_hash_index ON hash_table USING hash(id);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;WARNING:  hash indexes are not WAL-logged and their use is discouraged&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;CREATE INDEX&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-
-&lt;p&gt;从警告中可以看到，PostgreSQL 已经给出了明确提示。然而在 PostgreSQL 12.2 中，创建 HASH 索引则没有上述提示：&lt;/p&gt;
-&lt;figure class=&quot;highlight plain&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;postgres&amp;#x3D;# create index idx_hash_id on hash_table using hash(id);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;CREATE INDEX&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
-    
-    
-    
-    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
-    
-    
-    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
     
   </entry>
   
