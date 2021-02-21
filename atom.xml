@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2021-02-03T12:55:26.249Z</updated>
+  <updated>2021-02-21T01:14:16.683Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -15,6 +15,28 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>PostgreSQL 更新 configure 引入无关更改</title>
+    <link href="https://blog.japinli.top/2021/02/postgresql-update-configure-file/"/>
+    <id>https://blog.japinli.top/2021/02/postgresql-update-configure-file/</id>
+    <published>2021-02-21T01:07:21.000Z</published>
+    <updated>2021-02-21T01:14:16.683Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;PostgreSQL 使用 autoconf 工具来自动配置软件源代码包。我在修改了 configure.ac 文件之后执行 autoreconf 发现它将引入其他无关的更改，如下所示：&lt;/p&gt;
+&lt;figure class=&quot;highlight diff&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;@@ -1187,6 +1189,15 @@ do&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   | -silent | --silent | --silen | --sile | --sil)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     silent=yes ;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;addition&quot;&gt;+  -runstatedir | --runstatedir | --runstatedi | --runstated \&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;addition&quot;&gt;+  | --runstate | --runstat | --runsta | --runst | --runs \&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;addition&quot;&gt;+  | --run | --ru | --r)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;addition&quot;&gt;+    ac_prev=runstatedir ;;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;addition&quot;&gt;+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;addition&quot;&gt;+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;addition&quot;&gt;+  | --run=* | --ru=* | --r=*)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;addition&quot;&gt;+    runstatedir=$ac_optarg ;;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;addition&quot;&gt;+&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;@@ -14714,7 +14738,7 @@ else&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     We can&amp;#x27;t simply define LARGE_OFF_T to be 9223372036854775807,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     since some C++ compilers masquerading as C compilers&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;     incorrectly reject 9223372036854775807.  */&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;deletion&quot;&gt;-#define LARGE_OFF_T (((off_t) 1 &amp;lt;&amp;lt; 62) - 1 + ((off_t) 1 &amp;lt;&amp;lt; 62))&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;addition&quot;&gt;+#define LARGE_OFF_T ((((off_t) 1 &amp;lt;&amp;lt; 31) &amp;lt;&amp;lt; 31) - 1 + (((off_t) 1 &amp;lt;&amp;lt; 31) &amp;lt;&amp;lt; 31))&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;               &amp;amp;&amp;amp; LARGE_OFF_T % 2147483647 == 1)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;              ? 1 : -1];&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+
+&lt;p&gt;这是由于供应商的软件包经常包含一些改进导致的，这就导致了我们生成的 configure 文件与其他提交者的有不同的结果。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
+    
+  </entry>
   
   <entry>
     <title>PostgreSQL auto_explain 插件内存泄露</title>
@@ -413,32 +435,6 @@
     
     
     <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Ubuntu 笔记本盖住不挂机</title>
-    <link href="https://blog.japinli.top/2020/03/ubuntu-lid-switch-action/"/>
-    <id>https://blog.japinli.top/2020/03/ubuntu-lid-switch-action/</id>
-    <published>2020-03-08T04:20:23.000Z</published>
-    <updated>2020-08-23T11:33:04.742Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;p&gt;我有一台旧笔记本装有 Ubuntu 18.04 系统，希望把它当作一个服务器，这时我就需要在盖住笔记本时系统不休眠。&lt;/p&gt;
-&lt;p&gt;Ubuntu 系统中提供了 Login Manager 来管理这些行为，它的配置文件为</summary>
-        
-      
-    
-    
-    
-    <category term="杂项" scheme="https://blog.japinli.top/categories/%E6%9D%82%E9%A1%B9/"/>
-    
-    
-    <category term="Ubuntu" scheme="https://blog.japinli.top/tags/Ubuntu/"/>
     
   </entry>
   

@@ -2785,6 +2785,28 @@ table th:nth-of-type(2) {
       </tags>
   </entry>
   <entry>
+    <title>PostgreSQL 更新 configure 引入无关更改</title>
+    <url>/2021/02/postgresql-update-configure-file/</url>
+    <content><![CDATA[<p>PostgreSQL 使用 autoconf 工具来自动配置软件源代码包。我在修改了 configure.ac 文件之后执行 autoreconf 发现它将引入其他无关的更改，如下所示：</p>
+<figure class="highlight diff"><table><tr><td class="code"><pre><span class="line">@@ -1187,6 +1189,15 @@ do</span><br><span class="line">   | -silent | --silent | --silen | --sile | --sil)</span><br><span class="line">     silent=yes ;;</span><br><span class="line"></span><br><span class="line"><span class="addition">+  -runstatedir | --runstatedir | --runstatedi | --runstated \</span></span><br><span class="line"><span class="addition">+  | --runstate | --runstat | --runsta | --runst | --runs \</span></span><br><span class="line"><span class="addition">+  | --run | --ru | --r)</span></span><br><span class="line"><span class="addition">+    ac_prev=runstatedir ;;</span></span><br><span class="line"><span class="addition">+  -runstatedir=* | --runstatedir=* | --runstatedi=* | --runstated=* \</span></span><br><span class="line"><span class="addition">+  | --runstate=* | --runstat=* | --runsta=* | --runst=* | --runs=* \</span></span><br><span class="line"><span class="addition">+  | --run=* | --ru=* | --r=*)</span></span><br><span class="line"><span class="addition">+    runstatedir=$ac_optarg ;;</span></span><br><span class="line"><span class="addition">+</span></span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">@@ -14714,7 +14738,7 @@ else</span><br><span class="line">     We can&#x27;t simply define LARGE_OFF_T to be 9223372036854775807,</span><br><span class="line">     since some C++ compilers masquerading as C compilers</span><br><span class="line">     incorrectly reject 9223372036854775807.  */</span><br><span class="line"><span class="deletion">-#define LARGE_OFF_T (((off_t) 1 &lt;&lt; 62) - 1 + ((off_t) 1 &lt;&lt; 62))</span></span><br><span class="line"><span class="addition">+#define LARGE_OFF_T ((((off_t) 1 &lt;&lt; 31) &lt;&lt; 31) - 1 + (((off_t) 1 &lt;&lt; 31) &lt;&lt; 31))</span></span><br><span class="line">   int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721</span><br><span class="line">               &amp;&amp; LARGE_OFF_T % 2147483647 == 1)</span><br><span class="line">              ? 1 : -1];</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这是由于供应商的软件包经常包含一些改进导致的，这就导致了我们生成的 configure 文件与其他提交者的有不同的结果。</p>
+<a id="more"></a>
+
+<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>我们可以从 autoconf 的<a href="https://www.gnu.org/software/autoconf/#downloading">官网下载</a>并重新安装。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> tar xf autoconf-2.69.tar.gz</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> autoconf-2.69</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./configure --prefix=/usr/<span class="built_in">local</span>/autoconf-2.69</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> make</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo make install</span></span><br></pre></td></tr></table></figure>
+
+<p>最后将 <code>/usr/local/autoconf-2.69/bin</code> 加入到 <code>PATH</code> 环境变量的开始（确保我们安装的 autoconf 先于系统的即可）并重新载入环境变量。随后执行 <code>autoreconf</code> 命令更新 <code>configure</code> 文件，这时就不会引入其他无关的更改。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="https://www.postgresql.org/message-id/flat/20181229140802.GE2972%40paquier.xyz">https://www.postgresql.org/message-id/flat/20181229140802.GE2972%40paquier.xyz</a></p>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>PostgreSQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>PyInstaller 打包 PyQt5 失败 - 执行脚本失败</title>
     <url>/2019/07/pyinstaller-package-pyqt5-error-on-Qt5Core/</url>
     <content><![CDATA[<p>最近用 Python 帮人写一个程序，主体工作完成之后，利用 PyQt 写了一个界面，通过命令行运行一切正常，然后，利用 PyInstaller 打包成一个单独的可执行文件时，问题就来了:( 。我使用打包命令如下：</p>
