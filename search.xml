@@ -385,6 +385,31 @@
       </tags>
   </entry>
   <entry>
+    <title>非超级用户下运行 Solaris SMF 服务</title>
+    <url>/2019/10/SMF-on-Solaris-under-non-superuser/</url>
+    <content><![CDATA[<p>今天在 Solaris 上遇到一个问题，我需要在非超级用户下运行某个服务。默认情况下，通过 SMF 管理的都是在 root 用户下运行的，但是我们可以通过修改配置文件来使其运行到特定用户下。</p>
+<a id="more"></a>
+
+<p>例如，我们有如下一个配置文件（部分）：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">exec_method</span> <span class="attr">type</span>=<span class="string">&quot;method&quot;</span> <span class="attr">name</span>=<span class="string">&quot;start&quot;</span> <span class="attr">exec</span>=<span class="string">&quot;/path/to/exec_binary <span class="symbol">&amp;amp;</span>&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">method_context</span> <span class="attr">working_directory</span>=<span class="string">&quot;/path/to/work&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">method_environment</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">envar</span> <span class="attr">name</span>=<span class="string">&quot;HOME&quot;</span> <span class="attr">value</span>=<span class="string">&quot;/home/path&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">method_environment</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">method_context</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">exec_method</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>现在，我们想要 <code>exec_binary</code> 在 <code>tom</code> 用户下运行，那么我们需要加入 <code>method_credential</code> 元素，如下所示：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">exec_method</span> <span class="attr">type</span>=<span class="string">&quot;method&quot;</span> <span class="attr">name</span>=<span class="string">&quot;start&quot;</span> <span class="attr">exec</span>=<span class="string">&quot;/path/to/exec_binary <span class="symbol">&amp;amp;</span>&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">method_context</span> <span class="attr">working_directory</span>=<span class="string">&quot;/path/to/work&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">method_credential</span> <span class="attr">user</span>=<span class="string">&quot;tom&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">method_environment</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">envar</span> <span class="attr">name</span>=<span class="string">&quot;HOME&quot;</span> <span class="attr">value</span>=<span class="string">&quot;/home/path&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">method_environment</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">method_context</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">exec_method</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这样，我们便可以在 <code>tom</code> 用户下运行 <code>exec_binary</code> 的服务了，这里需要注意 <code>method_credential</code> 的位置，它需要位于 <code>method_environment</code> 之前，否则将出现如下问题。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">element method_context: validity error : Element method_context content does not follow the DTD, expecting ((method_profile | method_credential)? , method_environment?), got (method_environment method_credential )</span><br><span class="line">svccfg: Document is not valid.</span><br></pre></td></tr></table></figure>
+
+<p>我们可通过查看 <code>/usr/share/lib/xml/dtd/service_bundle.dtd.1</code> 文件来了解更多的 SMF 配置信息。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="https://www.linuxquestions.org/questions/solaris-opensolaris-20/problem-by-validate-a-manefest-file-4175468958/">https://www.linuxquestions.org/questions/solaris-opensolaris-20/problem-by-validate-a-manefest-file-4175468958/</a><br>[2] <a href="https://www.master-tutorial.design/2010/06/credentials-and-projects-for-solaris-10.html">https://www.master-tutorial.design/2010/06/credentials-and-projects-for-solaris-10.html</a></p>
+]]></content>
+      <categories>
+        <category>杂项</category>
+      </categories>
+      <tags>
+        <tag>Solaris</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MacOS Mojave 上 GDB 调试配置</title>
     <url>/2019/06/GDB-on-MacOS-Mojave/</url>
     <content><![CDATA[<p>最近在 MacOS 上写代码，需要使用 gdb 进行调试，踩了一些坑，因此在这里做一个简要记录。稍微搜索一下我们就可以知道要在 MacOS 上使用 gdb 需要先创建一个自签名证书（<a href="https://gist.github.com/gravitylow/fb595186ce6068537a6e9da6d8b5b96d">看这里</a>)。</p>
@@ -434,31 +459,6 @@
       <tags>
         <tag>MacOS</tag>
         <tag>gdb</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>非超级用户下运行 Solaris SMF 服务</title>
-    <url>/2019/10/SMF-on-Solaris-under-non-superuser/</url>
-    <content><![CDATA[<p>今天在 Solaris 上遇到一个问题，我需要在非超级用户下运行某个服务。默认情况下，通过 SMF 管理的都是在 root 用户下运行的，但是我们可以通过修改配置文件来使其运行到特定用户下。</p>
-<a id="more"></a>
-
-<p>例如，我们有如下一个配置文件（部分）：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">exec_method</span> <span class="attr">type</span>=<span class="string">&quot;method&quot;</span> <span class="attr">name</span>=<span class="string">&quot;start&quot;</span> <span class="attr">exec</span>=<span class="string">&quot;/path/to/exec_binary <span class="symbol">&amp;amp;</span>&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">method_context</span> <span class="attr">working_directory</span>=<span class="string">&quot;/path/to/work&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">method_environment</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">envar</span> <span class="attr">name</span>=<span class="string">&quot;HOME&quot;</span> <span class="attr">value</span>=<span class="string">&quot;/home/path&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">method_environment</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">method_context</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">exec_method</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>现在，我们想要 <code>exec_binary</code> 在 <code>tom</code> 用户下运行，那么我们需要加入 <code>method_credential</code> 元素，如下所示：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">exec_method</span> <span class="attr">type</span>=<span class="string">&quot;method&quot;</span> <span class="attr">name</span>=<span class="string">&quot;start&quot;</span> <span class="attr">exec</span>=<span class="string">&quot;/path/to/exec_binary <span class="symbol">&amp;amp;</span>&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">method_context</span> <span class="attr">working_directory</span>=<span class="string">&quot;/path/to/work&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">method_credential</span> <span class="attr">user</span>=<span class="string">&quot;tom&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">method_environment</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">envar</span> <span class="attr">name</span>=<span class="string">&quot;HOME&quot;</span> <span class="attr">value</span>=<span class="string">&quot;/home/path&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">method_environment</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">method_context</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">exec_method</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>这样，我们便可以在 <code>tom</code> 用户下运行 <code>exec_binary</code> 的服务了，这里需要注意 <code>method_credential</code> 的位置，它需要位于 <code>method_environment</code> 之前，否则将出现如下问题。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">element method_context: validity error : Element method_context content does not follow the DTD, expecting ((method_profile | method_credential)? , method_environment?), got (method_environment method_credential )</span><br><span class="line">svccfg: Document is not valid.</span><br></pre></td></tr></table></figure>
-
-<p>我们可通过查看 <code>/usr/share/lib/xml/dtd/service_bundle.dtd.1</code> 文件来了解更多的 SMF 配置信息。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="https://www.linuxquestions.org/questions/solaris-opensolaris-20/problem-by-validate-a-manefest-file-4175468958/">https://www.linuxquestions.org/questions/solaris-opensolaris-20/problem-by-validate-a-manefest-file-4175468958/</a><br>[2] <a href="https://www.master-tutorial.design/2010/06/credentials-and-projects-for-solaris-10.html">https://www.master-tutorial.design/2010/06/credentials-and-projects-for-solaris-10.html</a></p>
-]]></content>
-      <categories>
-        <category>杂项</category>
-      </categories>
-      <tags>
-        <tag>Solaris</tag>
       </tags>
   </entry>
   <entry>
@@ -1523,6 +1523,35 @@ table th:nth-of-type(2) {
       </categories>
       <tags>
         <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Oracle wm_concat 函数说明</title>
+    <url>/2021/03/oracle-wm-concat/</url>
+    <content><![CDATA[<p>Oracle 数据库的 <code>wm_concat</code> 函数用于将多行数据聚合为单行，从而提供与特定值关联的数据列表，它将以逗号来分割列表。<br>本文主要介绍 <code>wm_concat</code> 函数的功能以及其在 PostgreSQL 数据库中的替换方法。</p>
+<a id="more"></a>
+
+<h2 id="测试用例"><a href="#测试用例" class="headerlink" title="测试用例"></a>测试用例</h2><p>本文将使用下面的测试用例来测试 <code>wm_concat</code> 函数以及其替代方法。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> tbl (col1 <span class="built_in">int</span>, col2 <span class="built_in">VARCHAR</span>(<span class="number">20</span>));</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> tbl <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;Hello&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> tbl <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;world&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> tbl <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;this&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> tbl <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;is&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> tbl <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;a&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> tbl <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;test&#x27;</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> tbl <span class="keyword">VALUES</span> (<span class="number">2</span>, <span class="string">&#x27;wm_concat test&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Oracle"><a href="#Oracle" class="headerlink" title="Oracle"></a>Oracle</h2><p>在 Oracle 数据库中 <code>wm_concat</code> 没有相关的文档记录的，其输出如下所示。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">SQL&gt; SELECT col1, wm_concat(col2) FROM tbl GROUP BY (col1);</span><br><span class="line"></span><br><span class="line">      COL1 WM_CONCAT(COL2)</span><br><span class="line"><span class="comment">---------- --------------------------------------------------------------------------------</span></span><br><span class="line">         1 Hello,test,a,is,this,world</span><br><span class="line">         2 wm_concat test</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>由于 <code>wm_concat</code> 没有相关的文档记录，因此不建议使用该函数。其次，在 Oracle 12c 中 <code>wm_concat</code> 已经被移除了。更好的写法是通过 <code>listagg</code> 函数对其进行替换。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">SQL&gt; SELECT col1, listagg(col2, &#x27;,&#x27;) WITHIN GROUP (ORDER BY col2) AS agg FROM tbl GROUP BY col1;</span><br><span class="line"></span><br><span class="line">      COL1 AGG</span><br><span class="line"><span class="comment">---------- --------------------------------------------------------------------------------</span></span><br><span class="line">         1 Hello,test,a,is,this,world</span><br><span class="line">         2 wm_concat test</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="PostgreSQL"><a href="#PostgreSQL" class="headerlink" title="PostgreSQL"></a>PostgreSQL</h2><p>当我们将其迁移到 PostgreSQL 时，我们可以使用 <code>string_agg</code> 函数来替换 Oracle 中的 <code>wm_concat</code> 和 <code>listagg</code> 函数。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">postgres&#x3D;# SELECT col1, string_agg(col2, &#39;,&#39;) FROM tbl GROUP BY col1;</span><br><span class="line"> col1 |         string_agg</span><br><span class="line">------+----------------------------</span><br><span class="line">    2 | wm_concat test</span><br><span class="line">    1 | Hello,world,this,is,a,test</span><br><span class="line">(2 rows)</span><br><span class="line"></span><br><span class="line">postgres# SELECT col1, string_agg(col2, &#39;,&#39; ORDER BY col2) FROM tbl GROUP BY col1;</span><br><span class="line"> col1 |         string_agg</span><br><span class="line">------+----------------------------</span><br><span class="line">    1 | a,Hello,is,test,this,world</span><br><span class="line">    2 | wm_concat test</span><br><span class="line">(2 rows)</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下，<code>wm_concat</code> 函数是根据其聚合的列进行排序的，但是其排序的结果和 PostgreSQL 中不太一样，目前尚不清楚具体原因。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>[1] <a href="http://psoug.org/definition/WM_CONCAT.htm">http://psoug.org/definition/WM_CONCAT.htm</a><br>[1] <a href="https://asktom.oracle.com/pls/apex/f?p=100:11:::NO:RP:P11_QUESTION_ID:9529613900346315631">https://asktom.oracle.com/pls/apex/f?p=100:11:::NO:RP:P11_QUESTION_ID:9529613900346315631</a></p>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>PostgreSQL</tag>
+        <tag>Oracle</tag>
       </tags>
   </entry>
   <entry>

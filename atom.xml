@@ -6,7 +6,7 @@
   <link href="https://blog.japinli.top/atom.xml" rel="self"/>
   
   <link href="https://blog.japinli.top/"/>
-  <updated>2021-02-21T01:14:16.683Z</updated>
+  <updated>2021-03-07T07:19:00.732Z</updated>
   <id>https://blog.japinli.top/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Oracle wm_concat 函数说明</title>
+    <link href="https://blog.japinli.top/2021/03/oracle-wm-concat/"/>
+    <id>https://blog.japinli.top/2021/03/oracle-wm-concat/</id>
+    <published>2021-03-07T07:13:35.000Z</published>
+    <updated>2021-03-07T07:19:00.732Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;Oracle 数据库的 &lt;code&gt;wm_concat&lt;/code&gt; 函数用于将多行数据聚合为单行，从而提供与特定值关联的数据列表，它将以逗号来分割列表。&lt;br&gt;本文主要介绍 &lt;code&gt;wm_concat&lt;/code&gt; 函数的功能以及其在 PostgreSQL 数据库中的替换方法。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+    
+    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
+    
+    <category term="Oracle" scheme="https://blog.japinli.top/tags/Oracle/"/>
+    
+  </entry>
   
   <entry>
     <title>PostgreSQL 更新 configure 引入无关更改</title>
@@ -416,25 +437,6 @@
     
     
     <category term="gdb" scheme="https://blog.japinli.top/tags/gdb/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>PostgreSQL 大对象</title>
-    <link href="https://blog.japinli.top/2020/04/postgresql-large-object/"/>
-    <id>https://blog.japinli.top/2020/04/postgresql-large-object/</id>
-    <published>2020-04-04T04:30:04.000Z</published>
-    <updated>2020-08-23T11:24:48.496Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;我们知道在 Oracle 数据库中，大对象有三种类型，分别是 CLOB，BLOB 和 BFILE。在 Oracle 数据库中大对象最大存储根据配置可以达到 8TB 到 128TB。然而在 PostgreSQL 数据库中并没有提供这三种数据类型。因此在进行迁移的时候，我们需要做类型的映射。在参考文献 [2] 中提到可以将 CLOB 和 BLOB 分别映射到 text 和 bytea 数据类型上。此外，PostgreSQL 的插件 pg_largeobject 也提供了一种大对象的支持。本文简要介绍这两种大对象的使用。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="数据库" scheme="https://blog.japinli.top/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
-    
-    
-    <category term="PostgreSQL" scheme="https://blog.japinli.top/tags/PostgreSQL/"/>
     
   </entry>
   
